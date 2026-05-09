@@ -1,0 +1,1809 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>NEXOR CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --navy:#1B2A4A;--green:#4CAF50;--green2:#388E3C;--green-lt:#E8F5E9;
+  --bg:#F5F7FA;--bg2:#FFFFFF;--bg3:#F0F4F8;--bg4:#E8EDF3;
+  --border:#DDE3EC;--border2:#C8D2E0;
+  --text:#1B2A4A;--text2:#4A6080;--text3:#8A9BB0;
+  --blue:#1976D2;--blue-bg:#E3F0FB;--blue-lt:#EBF4FF;
+  --amber:#F57C00;--amber-bg:#FFF3E0;
+  --red:#D32F2F;--red-bg:#FFEBEE;
+  --purple:#6B3FA0;--purple-bg:#F0E9FA;
+  --r:10px;--r2:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);-webkit-text-size-adjust:100%}
+.shell{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:220px;background:var(--navy);display:flex;flex-direction:column;flex-shrink:0}
+.main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.logo{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.1)}
+.logo-text{font-weight:800;font-size:26px;letter-spacing:2px;color:#fff;line-height:1}
+.logo-text span{color:var(--green)}
+.logo-sub{font-size:8px;color:rgba(255,255,255,.4);letter-spacing:1.5px;margin-top:3px;text-transform:uppercase}
+.nav{padding:10px 8px;flex:1}
+.ni{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r2);cursor:pointer;color:rgba(255,255,255,.6);font-size:13px;font-weight:600;transition:all .15s;margin-bottom:2px;border-left:3px solid transparent;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.ni:hover,.ni:active{background:rgba(255,255,255,.08);color:#fff}
+.ni.active{background:rgba(76,175,80,.18);color:#6dcf71;border-left-color:var(--green)}
+.nb{margin-left:auto;background:var(--red);color:#fff;font-size:10px;padding:1px 6px;border-radius:20px}
+.sf{padding:10px 12px;border-top:1px solid rgba(255,255,255,.08)}
+.topbar{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg2);position:sticky;top:0;z-index:10;gap:10px;flex-wrap:wrap}
+.topbar h1{font-size:17px;font-weight:700;color:var(--navy)}
+.ta{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:9px 16px;border-radius:var(--r2);font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .15s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.bp{background:var(--green);color:#fff}.bp:hover{background:var(--green2)}
+.bg{background:transparent;color:var(--navy);border:1px solid var(--border2)}.bg:hover{background:var(--bg3)}
+.bd{background:var(--red-bg);color:var(--red);border:1px solid #ffcdd2}
+.bs{padding:6px 12px;font-size:12px}
+.page{padding:18px 20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:0 1px 4px rgba(27,42,74,.06)}
+.ct{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--navy);margin-bottom:12px;border-left:3px solid var(--green);padding-left:8px}
+.dg5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
+.dg4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.sc{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;box-shadow:0 1px 4px rgba(27,42,74,.06);border-top:3px solid var(--border)}
+.sn{font-size:30px;font-weight:800;font-family:'DM Mono',monospace;line-height:1}
+.sl{font-size:11px;color:var(--text2);margin-top:4px;font-weight:700;text-transform:uppercase;letter-spacing:.8px}
+.ss{font-size:10px;color:var(--text3);margin-top:2px}
+.dt{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+.d3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.mi{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg3);border-radius:var(--r2);border:1px solid var(--border);font-size:12px;margin-bottom:5px}
+.mn{flex:1;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{display:inline-flex;align-items:center;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;white-space:nowrap}
+.bv{background:var(--green-lt);color:var(--green2)}
+.bpl{background:var(--blue-lt);color:var(--blue)}
+.bpe{background:var(--bg3);color:var(--text2)}
+.ba{background:var(--red-bg);color:var(--red)}
+.bm{background:var(--amber-bg);color:var(--amber)}
+.bpr{background:var(--purple-bg);color:var(--purple)}
+.bps{background:var(--amber-bg);color:var(--amber)}
+.bg2c{background:var(--green-lt);color:var(--green2)}
+.blo{background:var(--red-bg);color:var(--red)}
+.bf{background:#FFF3E0;color:#E65100}
+.bsi{background:#E3F0FB;color:#1565C0}
+.bc{background:#E8F5E9;color:#2E7D32}
+.bsk{background:#FFEBEE;color:#C62828}
+.br{background:#F0E9FA;color:#6B3FA0}
+.bsk2{background:#FFEBEE;color:#C62828;font-size:9px;padding:2px 5px}
+.ticket-badge{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;white-space:nowrap}
+.ticket-srv{background:#E3F0FB;color:#1565C0}
+.ticket-rep{background:#E8F5E9;color:#2E7D32}
+.fi{display:block;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:9px 12px;color:var(--text);font-family:'Syne',sans-serif;font-size:13px;outline:none;-webkit-appearance:none;width:100%}
+.fi:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(76,175,80,.12)}
+.fi[readonly]{background:var(--bg3);color:var(--text2);cursor:default}
+.fi::placeholder{color:var(--text3)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.filters .fi{width:auto;flex:1;min-width:110px}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:9px 10px;font-size:10px;font-weight:700;color:var(--navy);border-bottom:2px solid var(--border);text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;background:var(--bg3)}
+td{padding:8px 10px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+tr:hover td{background:#F0F7FF}
+tr.rv td{border-left:3px solid var(--green);background:rgba(76,175,80,.03)}
+tr.rp td{border-left:3px solid var(--blue);background:rgba(25,118,210,.03)}
+tr.rpr td{border-left:3px solid var(--purple);background:rgba(107,63,160,.04)}
+tr.ra td{background:rgba(211,47,47,.05)}
+.tn{font-weight:600;max-width:200px}
+.tn small{display:block;color:var(--text3);font-size:10px;font-weight:400}
+.tm{color:var(--text2);font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pb{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-top:6px}
+.pf{height:100%;border-radius:3px}
+.sec{display:none}.sec.active{display:block}
+.empty{text-align:center;padding:40px;color:var(--text3);font-size:13px;line-height:1.8}
+/* OVERLAY / MODAL */
+.ov{position:fixed;inset:0;background:rgba(27,42,74,.5);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(2px)}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);width:100%;max-width:740px;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(27,42,74,.2)}
+.mh{padding:16px 20px;border-bottom:2px solid var(--green);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--navy);z-index:1;border-radius:var(--r) var(--r) 0 0}
+.mh h2{font-size:15px;font-weight:700;color:#fff}
+.mb{padding:20px}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+.fg label{font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.6px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.full{grid-column:1/-1}
+.stitle{font-size:11px;font-weight:700;color:var(--green2);text-transform:uppercase;letter-spacing:1px;border-left:3px solid var(--green);padding-left:8px;margin:18px 0 10px}
+.eqtabs{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap}
+.eqt{padding:8px 14px;border-radius:var(--r2);font-size:12px;font-weight:700;cursor:pointer;border:2px solid var(--border);color:var(--text2);transition:all .15s;-webkit-tap-highlight-color:transparent}
+.eqt.on{border-color:var(--green);color:var(--green2);background:var(--green-lt)}
+.eqp{display:none}.eqp.on{display:block}
+/* Cliente info card readonly */
+.cli-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:14px}
+.cli-card-row{display:flex;gap:16px;flex-wrap:wrap;font-size:12px}
+.cli-card-item{display:flex;flex-direction:column;gap:2px;min-width:120px}
+.cli-card-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px}
+.cli-card-val{font-weight:600;color:var(--navy)}
+/* Gantt */
+.gwrap{overflow-x:auto}
+.gtbl{border-collapse:collapse;min-width:100%}
+.gtbl th{padding:5px 3px;font-size:9px;font-family:'DM Mono';color:var(--navy);border:1px solid var(--border);background:var(--bg3);min-width:34px;text-align:center;white-space:nowrap;font-weight:700}
+.gtbl th.hoy{color:var(--amber);border-color:var(--amber)}
+.gtbl td{border:1px solid var(--border);height:26px}
+.glbl{padding:4px 10px;font-size:11px;font-weight:600;white-space:nowrap;min-width:160px;background:var(--bg3)}
+.glbl small{display:block;font-size:9px;color:var(--text3);font-weight:400}
+.gtipo{padding:4px 8px;font-size:10px;min-width:80px;background:var(--bg3)}
+.gbar{width:100%;height:100%;border-radius:2px}
+/* Agenda */
+.agg{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.agd{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);min-height:110px;box-shadow:0 1px 3px rgba(27,42,74,.06)}
+.agdh{padding:7px 10px;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text2);border-bottom:1px solid var(--border);background:var(--bg3);border-radius:var(--r2) var(--r2) 0 0}
+.agdh.hoy{color:var(--green2);background:var(--green-lt)}
+.ages{padding:5px;display:flex;flex-direction:column;gap:3px}
+.agev{padding:5px 7px;border-radius:4px;font-size:11px;cursor:pointer}
+.agev .evt{font-family:'DM Mono';font-size:9px;opacity:.7}
+.agev .evn{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;border-left:4px solid var(--green);border-radius:var(--r);padding:12px 18px;font-size:13px;font-weight:600;z-index:999;transform:translateY(60px);opacity:0;transition:all .25s;box-shadow:0 4px 16px rgba(27,42,74,.25)}
+.toast.show{transform:translateY(0);opacity:1}
+@media(max-width:768px){
+  .shell{flex-direction:column}
+  .sidebar{width:100%;height:auto}
+  .nav{display:flex;flex-direction:row;flex-wrap:nowrap;overflow-x:auto;padding:4px 6px;gap:2px}
+  .ni{padding:8px 8px;font-size:11px;flex:0 0 auto;border-left:none!important;border-bottom:3px solid transparent;border-radius:0;margin-bottom:0}
+  .ni.active{border-bottom-color:var(--green)!important;background:rgba(76,175,80,.15)!important}
+  .logo{padding:10px 14px;display:flex;align-items:center;gap:10px}
+  .logo-sub{display:none}.logo-text{font-size:20px}
+  .main{flex:1;overflow-y:auto}
+  .dg5,.dg4{grid-template-columns:repeat(2,1fr)!important}
+  .dt,.d3{grid-template-columns:1fr}
+  .g2,.g3{grid-template-columns:1fr!important}
+  .agg{grid-template-columns:1fr 1fr}
+  .topbar{padding:10px 14px}
+  .topbar h1{font-size:15px}
+  .page{padding:12px 14px}
+  .modal{max-height:95vh;border-radius:var(--r) var(--r) 0 0;position:fixed;bottom:0;left:0;right:0;width:100%!important;max-width:100%!important}
+  .ov{align-items:flex-end;padding:0}
+  .eqtabs{flex-wrap:wrap}
+  .eqt{flex:1;text-align:center;min-width:80px}
+  .filters .fi{min-width:100px}
+  table{font-size:11px}
+  th,td{padding:7px 8px}
+  .cli-card-row{gap:10px}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-text">NE<span>X</span>OR</div>
+    <div class="logo-sub">Automation &amp; Integration Systems</div>
+  </div>
+  <nav class="nav">
+    <div class="ni active" onclick="goTo('dashboard')">◈ Dashboard</div>
+    <div class="ni" onclick="goTo('clientes')">◉ Clientes <span class="nb" id="badge-urg" style="display:none">!</span></div>
+    <div class="ni" onclick="goTo('visitas')">📋 Visitas</div>
+    <div class="ni" onclick="goTo('servicios')">🔧 Servicios</div>
+    <div class="ni" onclick="goTo('repuestos')">🔩 Repuestos</div>
+    <div class="ni" onclick="goTo('gantt')">▤ Gantt</div>
+    <div class="ni" onclick="goTo('agenda')">◷ Agenda</div>
+  </nav>
+  <div class="sf">
+    <div id="sync-status" style="font-size:10px;color:#F57C00;margin-bottom:6px">○ Conectando...</div>
+    <button onclick="syncAllToSheets()" class="btn" style="width:100%;background:rgba(76,175,80,.2);color:#6dcf71;font-size:11px;padding:7px;margin-bottom:4px;border:1px solid rgba(76,175,80,.3)">☁ Sincronizar</button>
+    <button onclick="syncFromSheets().then(()=>{renderActive()})" class="btn" style="width:100%;background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);font-size:11px;padding:7px;margin-bottom:4px;border:1px solid rgba(255,255,255,.15)">⟳ Actualizar</button>
+    <button onclick="inicializarClientesEnSheets()" class="btn" style="width:100%;background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);font-size:10px;padding:5px;margin-bottom:4px;border:1px solid rgba(255,255,255,.1)">📋 Cargar clientes Sheets</button>
+    <button onclick="exportarExcel()" class="btn" style="width:100%;background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);font-size:10px;padding:5px;border:1px solid rgba(255,255,255,.1)">⬇ Excel</button>
+  </div>
+</aside>
+<div class="main">
+
+<!-- DASHBOARD -->
+<div id="sec-dashboard" class="sec active">
+  <div class="topbar"><h1>Dashboard</h1></div>
+  <div class="page">
+    <div class="dg5" id="d-stats"></div>
+    <div class="dt">
+      <div class="card"><div class="ct">📍 Mis visitas</div><div id="d-vis"></div></div>
+      <div class="card"><div class="ct">🔧 Servicios &amp; Repuestos</div><div id="d-srv"></div></div>
+    </div>
+    <div style="height:14px"></div>
+    <div class="d3">
+      <div class="card"><div class="ct">⚡ Urgencias altas</div><div id="d-urg"></div></div>
+      <div class="card"><div class="ct">📅 Próximas visitas</div><div id="d-prox"></div></div>
+      <div class="card"><div class="ct">🏆 Por región</div><div id="d-reg"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- CLIENTES -->
+<div id="sec-clientes" class="sec">
+  <div class="topbar">
+    <h1>Clientes <span style="color:var(--text3);font-size:13px" id="cli-cnt"></span></h1>
+    <div class="ta"><button class="btn bp" onclick="abrirCliente(null)">+ Nuevo cliente</button></div>
+  </div>
+  <div class="page">
+    <div class="filters">
+      <input class="fi" style="width:200px;flex:none" placeholder="🔍 Buscar..." id="f-q" oninput="renderCli()">
+      <select class="fi" id="f-reg" onchange="renderCli()"><option value="">Toda región</option>
+        <option>ALICANTE</option><option>ALMERIA</option><option>ARAGON</option><option>CANARIAS</option>
+        <option>CASTELLON</option><option>CORDOBA</option><option>MADRID</option><option>MALAGA</option>
+        <option>MURCIA</option><option>SEVILLA</option><option>TARRAGONA</option><option>VALENCIA</option>
+      </select>
+      <select class="fi" id="f-fru" onchange="renderCli()"><option value="">Toda fruta</option>
+        <option>NARANJA</option><option>LIMON</option><option>CLEMENTINA</option><option>TOMATE</option>
+        <option>AGUACATE</option><option>MELON</option><option>SANDIA</option><option>KIWI</option><option>CHERRY</option><option>PIMIENTOS</option>
+      </select>
+      <select class="fi" id="f-cal" onchange="renderCli()"><option value="">Toda marca</option>
+        <option>FOMESA</option><option>SIENZ</option><option>COMPAC/TOMRA</option><option>SUNKIST</option><option>REEMOON</option>
+      </select>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden"><div class="tw">
+      <table><thead><tr>
+        <th>#</th><th>Cliente</th><th>Región</th><th>Fruta</th>
+        <th>Infeed</th><th>Calibrador</th><th>Llen./Palet.</th>
+        <th>Contacto</th><th>Teléfono</th><th></th>
+      </tr></thead><tbody id="tb-cli"></tbody></table>
+    </div></div>
+  </div>
+</div>
+
+<!-- VISITAS -->
+<div id="sec-visitas" class="sec">
+  <div class="topbar">
+    <h1>Visitas <span style="color:var(--text3);font-size:13px" id="vis-cnt"></span></h1>
+    <div class="ta"><button class="btn bp" onclick="abrirVisita(null)">+ Nueva visita</button></div>
+  </div>
+  <div class="page">
+    <div class="filters">
+      <input class="fi" style="width:200px;flex:none" placeholder="🔍 Buscar..." id="fv-q" oninput="renderVis()">
+      <select class="fi" id="fv-est" onchange="renderVis()"><option value="">Todo estado</option>
+        <option>Visitado</option><option>Planificado</option><option>Pendiente</option>
+      </select>
+      <select class="fi" id="fv-urg" onchange="renderVis()"><option value="">Toda urgencia</option>
+        <option>Alta</option><option>Media</option><option>Normal</option>
+      </select>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden"><div class="tw">
+      <table><thead><tr>
+        <th>Ticket</th><th>Fecha</th><th>Hora</th><th>Cliente</th><th>Región</th><th>Contacto</th><th>Tel.</th>
+        <th>Estado</th><th>Urgencia</th><th>Obs. Infeed</th><th>Obs. Calibrador</th><th>Obs. Llenado</th><th></th>
+      </tr></thead><tbody id="tb-vis"></tbody></table>
+    </div></div>
+  </div>
+</div>
+
+<!-- SERVICIOS -->
+<div id="sec-servicios" class="sec">
+  <div class="topbar">
+    <h1>Servicios Técnicos</h1>
+    <div class="ta"><button class="btn bp" onclick="abrirServicio(null)">+ Nuevo servicio</button></div>
+  </div>
+  <div class="page">
+    <div class="dg4" id="sv-stats"></div>
+    <div style="height:12px"></div>
+    <div class="filters">
+      <select class="fi" id="fs-est" onchange="renderSrv()"><option value="">Todo estado</option>
+        <option>Pendiente</option><option>En proceso</option><option>Programado</option><option>Completado</option>
+      </select>
+      <select class="fi" id="fs-tipo" onchange="renderSrv()"><option value="">Todo tipo</option>
+        <option>Mecánico</option><option>Eléctrico</option><option>Automatización</option>
+        <option>Control Línea</option><option>Téc. Campo</option>
+      </select>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden"><div class="tw">
+      <table><thead><tr>
+        <th>Ticket</th><th>Cliente</th><th>Tipo</th><th>Descripción</th><th>Sección</th>
+        <th>F. Inicio</th><th>F. Fin</th><th>Responsable</th><th>Estado</th><th></th>
+      </tr></thead><tbody id="tb-srv"></tbody></table>
+    </div></div>
+  </div>
+</div>
+
+<!-- REPUESTOS -->
+<div id="sec-repuestos" class="sec">
+  <div class="topbar">
+    <h1>Repuestos</h1>
+    <div class="ta"><button class="btn bp" onclick="abrirRepuesto(null)">+ Nuevo repuesto</button></div>
+  </div>
+  <div class="page">
+    <div class="dg4" id="rp-stats"></div>
+    <div style="height:12px"></div>
+    <div class="filters">
+      <select class="fi" id="fr-est" onchange="renderRep()"><option value="">Todo estado</option>
+        <option>Pendiente</option><option>En proceso</option><option>Entregado</option><option>Cerrado</option>
+      </select>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden"><div class="tw">
+      <table><thead><tr>
+        <th>Ticket</th><th>Cliente</th><th>Repuesto solicitado</th><th>Sección</th>
+        <th>F. Necesita</th><th>Responsable</th><th>Estado</th><th>Comentarios</th><th></th>
+      </tr></thead><tbody id="tb-rep"></tbody></table>
+    </div></div>
+  </div>
+</div>
+
+<!-- GANTT -->
+<div id="sec-gantt" class="sec">
+  <div class="topbar"><h1>Gantt de Trabajos</h1>
+    <div class="ta"><button class="btn bg bs" onclick="renderGantt()">↻ Actualizar</button></div>
+  </div>
+  <div class="page">
+    <div class="card" style="padding:0;overflow:hidden"><div class="gwrap" id="gantt-c"></div></div>
+    <div style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap;font-size:11px">
+      <span style="color:var(--text3)">Leyenda:</span>
+      <span><span style="display:inline-block;width:14px;height:10px;border-radius:2px;background:#D32F2F;vertical-align:middle;margin-right:4px"></span>Mecánico</span>
+      <span><span style="display:inline-block;width:14px;height:10px;border-radius:2px;background:#F57C00;vertical-align:middle;margin-right:4px"></span>Eléctrico</span>
+      <span><span style="display:inline-block;width:14px;height:10px;border-radius:2px;background:#388E3C;vertical-align:middle;margin-right:4px"></span>Automatización</span>
+      <span><span style="display:inline-block;width:14px;height:10px;border-radius:2px;background:#1976D2;vertical-align:middle;margin-right:4px"></span>Control Línea</span>
+      <span><span style="display:inline-block;width:14px;height:10px;border-radius:2px;background:#6B3FA0;vertical-align:middle;margin-right:4px"></span>Téc. Campo</span>
+      <span><span style="display:inline-block;width:14px;height:10px;border-radius:2px;background:#4CAF50;vertical-align:middle;margin-right:4px"></span>Repuesto</span>
+    </div>
+  </div>
+</div>
+
+<!-- AGENDA -->
+<div id="sec-agenda" class="sec">
+  <div class="topbar"><h1>Agenda</h1>
+    <div class="ta">
+      <input type="date" id="ag-fecha" class="fi" onchange="renderAg()" style="cursor:pointer;width:auto">
+      <button class="btn bp" onclick="abrirVisita(null)">+ Planificar</button>
+    </div>
+  </div>
+  <div class="page">
+    <div class="agg" id="ag-grid"></div>
+    <div style="margin-top:16px"><div class="card"><div class="ct">Todas las visitas</div><div class="tw">
+      <table><thead><tr><th>Fecha</th><th>Hora</th><th>Cliente</th><th>Región</th><th>Contacto</th><th>Tel.</th><th>Estado</th><th>Urgencia</th><th></th></tr></thead>
+      <tbody id="tb-ag"></tbody></table>
+    </div></div></div>
+  </div>
+</div>
+
+</div></div>
+
+<!-- MODAL CLIENTE -->
+<div id="m-cliente" class="ov" style="display:none" onclick="if(event.target===this)cerrar('m-cliente')">
+<div class="modal">
+  <div class="mh"><h2 id="mc-title">Datos del Cliente</h2>
+    <button class="btn bg bs" style="color:#fff;border-color:rgba(255,255,255,.3)" onclick="cerrar('m-cliente')">✕</button>
+  </div>
+  <div class="mb">
+    <input type="hidden" id="c-r">
+    <div class="g2">
+      <div class="fg full"><label>Nombre del cliente</label><input type="text" id="c-n" class="fi" placeholder="Nombre completo"></div>
+      <div class="fg"><label>Región</label>
+        <select id="c-reg" class="fi"><option value="">—</option>
+          <option>ALICANTE</option><option>ALMERIA</option><option>ARAGON</option><option>CANARIAS</option>
+          <option>CASTELLON</option><option>CORDOBA</option><option>MADRID</option><option>MALAGA</option>
+          <option>MURCIA</option><option>SEVILLA</option><option>TARRAGONA</option><option>VALENCIA</option><option>OTRAS</option>
+        </select>
+      </div>
+      <div class="fg"><label>Fruta que procesan</label>
+        <select id="c-fru" class="fi"><option value="">—</option>
+          <option>NARANJA</option><option>LIMON</option><option>CLEMENTINA</option><option>NARANJA/CLEMENTINA</option>
+          <option>NARANJA/LIMON</option><option>TOMATE</option><option>AGUACATE</option><option>MELON</option>
+          <option>SANDIA</option><option>MELONES/SANDIA</option><option>KIWI</option><option>CHERRY</option>
+          <option>PIMIENTOS</option><option>KAKI</option><option>LIMON/NARANJA</option><option>LIMON/TOMATE</option>
+          <option>TOMATE/AGUACATE</option><option>TOMATE/SANDIA/LIMON</option><option>OTRAS</option>
+        </select>
+      </div>
+      <div class="fg"><label>Nombre contacto</label><input type="text" id="c-nom" class="fi" placeholder="Nombre"></div>
+      <div class="fg"><label>Cargo</label>
+        <select id="c-cargo" class="fi"><option value="">—</option>
+          <option>Gerente General</option><option>Gerente de Planta</option>
+          <option>Jefe de Mantenimiento</option><option>Jefe de Producción</option>
+          <option>Responsable Técnico</option><option>Encargado</option>
+          <option>Operario</option><option>Técnico</option><option>Compras</option><option>Otro</option>
+        </select>
+      </div>
+      <div class="fg"><label>Teléfono</label><input type="tel" id="c-tel" class="fi" placeholder="Número"></div>
+      <div class="fg"><label>Email</label><input type="email" id="c-email" class="fi" placeholder="Email"></div>
+    </div>
+
+    <div class="stitle">⚙ Equipamiento — Infeed</div>
+    <div class="g2">
+      <div class="fg"><label>Marca Infeed</label>
+        <select id="c-inf-m" class="fi"><option value="">Sin datos</option>
+          <option>FOMESA</option><option>SIENZ</option><option>COMPAC/TOMRA</option><option>SUNKIST</option><option>REEMOON</option><option>OTRAS</option>
+        </select>
+      </div>
+      <div class="fg"><label>Otra marca / detalle</label><input type="text" id="c-inf-o" class="fi" placeholder="Especificar..."></div>
+      <div class="fg full"><label>Equipos infeed (despaletizadores, volcadores, RRT, tratamiento...)</label>
+        <textarea id="c-inf-e" class="fi" style="min-height:60px" placeholder="Ej: Despaletizador (2), Volcador torsión, RRT..."></textarea>
+      </div>
+    </div>
+
+    <div class="stitle">🎯 Equipamiento — Calibrador</div>
+    <div class="g2">
+      <div class="fg"><label>Marca Calibrador</label>
+        <select id="c-cal-m" class="fi"><option value="">Sin datos</option>
+          <option>FOMESA</option><option>SIENZ</option><option>COMPAC/TOMRA</option><option>SUNKIST</option><option>REEMOON</option><option>OTRAS</option>
+        </select>
+      </div>
+      <div class="fg"><label>Modelo / variante</label><input type="text" id="c-cal-mod" class="fi" placeholder="Ej: Compac SLS, Sienz 8 vías..."></div>
+      <div class="fg"><label>Nº de calles</label><input type="number" id="c-cal-cal" class="fi" placeholder="6" min="1" max="32"></div>
+      <div class="fg"><label>Otra marca / detalle</label><input type="text" id="c-cal-o" class="fi" placeholder="Especificar..."></div>
+      <div class="fg full"><label>Equipos calibrador (sensores, cámaras, pesadoras...)</label>
+        <textarea id="c-cal-e" class="fi" style="min-height:60px" placeholder="Ej: Calibrador Compac con cámara Tomra..."></textarea>
+      </div>
+    </div>
+
+    <div class="stitle">📦 Equipamiento — Llenado / Paletizado</div>
+    <div class="g2">
+      <div class="fg"><label>Marca Llenado / Paletizado</label>
+        <select id="c-pal-m" class="fi"><option value="">Sin datos</option>
+          <option>FOMESA</option><option>SIENZ</option><option>COMPAC/TOMRA</option><option>SUNKIST</option><option>REEMOON</option><option>OTRAS</option>
+        </select>
+      </div>
+      <div class="fg"><label>Otra marca / detalle</label><input type="text" id="c-pal-o" class="fi" placeholder="Especificar..."></div>
+      <div class="fg full"><label>Equipos llenado/paletizado (paletizadores, llenadoras, enfardadoras, fompack...)</label>
+        <textarea id="c-pal-e" class="fi" style="min-height:60px" placeholder="Ej: Paletizadores (6), Llenadoras bins (4)..."></textarea>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)">
+      <button class="btn bg" onclick="cerrar('m-cliente')">Cancelar</button>
+      <button class="btn bp" onclick="guardarCliente()">Guardar cliente</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- MODAL VISITA -->
+<div id="m-visita" class="ov" style="display:none" onclick="if(event.target===this)cerrar('m-visita')">
+<div class="modal">
+  <div class="mh"><h2 id="mv-title">Nueva visita</h2>
+    <button class="btn bg bs" style="color:#fff;border-color:rgba(255,255,255,.3)" onclick="cerrar('m-visita')">✕</button>
+  </div>
+  <div class="mb">
+    <input type="hidden" id="v-id">
+    <div class="stitle">📋 Datos de la visita</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px">Ticket:</span>
+      <span id="v-ticket-display" style="font-family:'DM Mono';font-size:13px;font-weight:700;color:var(--navy);background:var(--bg3);padding:3px 10px;border-radius:4px">—</span>
+    </div>
+    <div class="g2">
+      <div class="fg full"><label>Cliente</label>
+        <select id="v-cli" class="fi" onchange="autoFillVis()"><option value="">— Seleccionar —</option></select>
+      </div>
+    </div>
+    <!-- Card datos cliente (readonly) -->
+    <div class="cli-card" id="v-cli-info" style="display:none">
+      <div class="cli-card-row">
+        <div class="cli-card-item"><div class="cli-card-label">Región</div><div class="cli-card-val" id="vci-reg">—</div></div>
+        <div class="cli-card-item"><div class="cli-card-label">Fruta</div><div class="cli-card-val" id="vci-fru">—</div></div>
+        <div class="cli-card-item"><div class="cli-card-label">Infeed</div><div class="cli-card-val" id="vci-inf">—</div></div>
+        <div class="cli-card-item"><div class="cli-card-label">Calibrador</div><div class="cli-card-val" id="vci-cal">—</div></div>
+        <div class="cli-card-item"><div class="cli-card-label">Llenado/Palet.</div><div class="cli-card-val" id="vci-pal">—</div></div>
+        <div class="cli-card-item"><div class="cli-card-label">Contacto base</div><div class="cli-card-val" id="vci-nom">—</div></div>
+        <div class="cli-card-item"><div class="cli-card-label">Teléfono</div><div class="cli-card-val" id="vci-tel">—</div></div>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="fg"><label>Fecha visita</label><input type="date" id="v-fecha" class="fi"></div>
+      <div class="fg"><label>Hora</label>
+        <select id="v-hora" class="fi"><option value="">—</option>
+          <option>07:00</option><option>07:30</option><option>08:00</option><option>08:30</option>
+          <option>09:00</option><option>09:30</option><option>10:00</option><option>10:30</option>
+          <option>11:00</option><option>11:30</option><option>12:00</option><option>12:30</option>
+          <option>13:00</option><option>13:30</option><option>14:00</option><option>14:30</option>
+          <option>15:00</option><option>15:30</option><option>16:00</option><option>16:30</option>
+          <option>17:00</option><option>17:30</option><option>18:00</option>
+        </select>
+      </div>
+      <div class="fg"><label>Estado</label>
+        <select id="v-est" class="fi"><option>Planificado</option><option>Visitado</option><option>Pendiente</option><option>Cancelado</option></select>
+      </div>
+      <div class="fg"><label>Urgencia</label>
+        <select id="v-urg" class="fi"><option value="">Sin urgencia</option><option>Alta</option><option>Media</option><option>Normal</option></select>
+      </div>
+      <div class="fg"><label>Contacto visitado</label><input type="text" id="v-cont" class="fi" placeholder="Nombre del contacto"></div>
+      <div class="fg"><label>Cargo</label>
+        <select id="v-cargo" class="fi"><option value="">—</option>
+          <option>Gerente General</option><option>Gerente de Planta</option>
+          <option>Jefe de Mantenimiento</option><option>Jefe de Producción</option>
+          <option>Responsable Técnico</option><option>Encargado</option>
+          <option>Operario</option><option>Técnico</option><option>Compras</option><option>Otro</option>
+        </select>
+      </div>
+      <div class="fg"><label>Teléfono contacto</label><input type="tel" id="v-tel" class="fi" placeholder="Número"></div>
+    </div>
+
+    <div class="stitle">🔍 Observaciones de maquinaria en visita</div>
+    <div class="eqtabs">
+      <div class="eqt on" onclick="eqTab(0,this)">⚙ Infeed</div>
+      <div class="eqt" onclick="eqTab(1,this)">🎯 Calibrador</div>
+      <div class="eqt" onclick="eqTab(2,this)">📦 Llenado / Paletizado</div>
+    </div>
+    <div class="eqp on" id="eq-0">
+      <div class="fg"><label>Observaciones Infeed — lo que ves en la visita</label>
+        <textarea id="v-inf-ob" class="fi" style="min-height:80px" placeholder="Estado de los equipos, desgaste, reparaciones pendientes, comentarios del operario..."></textarea>
+      </div>
+    </div>
+    <div class="eqp" id="eq-1">
+      <div class="fg"><label>Observaciones Calibrador — lo que ves en la visita</label>
+        <textarea id="v-cal-ob" class="fi" style="min-height:80px" placeholder="Estado general, fallos detectados, versión software, ajustes necesarios..."></textarea>
+      </div>
+    </div>
+    <div class="eqp" id="eq-2">
+      <div class="fg"><label>Observaciones Llenado / Paletizado — lo que ves en la visita</label>
+        <textarea id="v-pal-ob" class="fi" style="min-height:80px" placeholder="Estado paletizadores, problemas de llenado, desgaste de cadenas..."></textarea>
+      </div>
+    </div>
+
+    <div class="stitle">💬 Comentarios generales</div>
+    <div class="fg">
+      <label>Comentarios del cliente / observaciones del mercado</label>
+      <textarea id="v-com" class="fi" style="min-height:70px" placeholder="Lo que te dijeron, planes de inversión, competencia mencionada, necesidades futuras..."></textarea>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)">
+      <button class="btn bg" onclick="cerrar('m-visita')">Cancelar</button>
+      <button class="btn bp" onclick="guardarVisita()">Guardar visita</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- MODAL SERVICIO -->
+<div id="m-servicio" class="ov" style="display:none" onclick="if(event.target===this)cerrar('m-servicio')">
+<div class="modal">
+  <div class="mh"><h2 id="ms-title">Nuevo Servicio Técnico</h2>
+    <button class="btn bg bs" style="color:#fff;border-color:rgba(255,255,255,.3)" onclick="cerrar('m-servicio')">✕</button>
+  </div>
+  <div class="mb">
+    <input type="hidden" id="s-id">
+    <div class="fg" style="margin-bottom:8px">
+      <label>Número de ticket</label>
+      <input type="text" id="s-ticket" class="fi" readonly style="background:var(--bg3);color:var(--blue);font-family:'DM Mono';font-weight:700;font-size:14px">
+    </div>
+    <div class="fg full"><label>Cliente</label>
+      <select id="s-cli" class="fi" onchange="autoFillSrv('s')"><option value="">— Seleccionar —</option></select>
+    </div>
+    <!-- Card cliente readonly -->
+    <div class="cli-card" id="s-cli-info" style="display:none">
+      <div class="cli-card-row">
+        <div class="cli-card-item"><div class="cli-card-label">Región</div><div class="cli-card-val" id="sci-reg">—</div></div>
+        <div class="cli-card-item"><div class="cli-card-label">Fruta</div><div class="cli-card-val" id="sci-fru">—</div></div>
+        <div class="cli-card-item"><div class="cli-card-label">Contacto</div><div class="cli-card-val" id="sci-nom">—</div></div>
+        <div class="cli-card-item"><div class="cli-card-label">Teléfono</div><div class="cli-card-val" id="sci-tel">—</div></div>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="fg"><label>Tipo de servicio</label>
+        <select id="s-tipo" class="fi">
+          <option>Mecánico</option><option>Eléctrico</option><option>Automatización</option>
+          <option>Control Línea</option><option>Téc. Campo</option>
+        </select>
+      </div>
+      <div class="fg"><label>Sección de la máquina</label>
+        <select id="s-sec" class="fi"><option value="">—</option>
+          <option>Infeed</option><option>Calibrador</option><option>Llenado / Paletizado</option>
+          <option>Toda la línea</option><option>Otro</option>
+        </select>
+      </div>
+      <div class="fg"><label>Fecha inicio</label><input type="date" id="s-ini" class="fi"></div>
+      <div class="fg"><label>Fecha fin / entrega</label><input type="date" id="s-fin" class="fi"></div>
+      <div class="fg"><label>Responsable técnico</label><input type="text" id="s-resp" class="fi" placeholder="Nombre del técnico asignado"></div>
+      <div class="fg"><label>Estado</label>
+        <select id="s-est" class="fi">
+          <option>Pendiente</option><option>En proceso</option><option>Programado</option><option>Completado</option><option>Cancelado</option>
+        </select>
+      </div>
+      <div class="fg full"><label>Descripción del trabajo</label>
+        <textarea id="s-desc" class="fi" style="min-height:70px" placeholder="Detalle del trabajo a realizar..."></textarea>
+      </div>
+      <div class="fg full"><label>Comentarios para el técnico</label>
+        <textarea id="s-com" class="fi" style="min-height:60px" placeholder="Lo que el cliente quiere, detalles importantes, condiciones de trabajo..."></textarea>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)">
+      <button class="btn bg" onclick="cerrar('m-servicio')">Cancelar</button>
+      <button class="btn bp" onclick="guardarServicio()">Guardar servicio</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- MODAL REPUESTO -->
+<div id="m-repuesto" class="ov" style="display:none" onclick="if(event.target===this)cerrar('m-repuesto')">
+<div class="modal">
+  <div class="mh"><h2 id="mr-title">Nuevo Repuesto</h2>
+    <button class="btn bg bs" style="color:#fff;border-color:rgba(255,255,255,.3)" onclick="cerrar('m-repuesto')">✕</button>
+  </div>
+  <div class="mb">
+    <input type="hidden" id="r-id">
+    <div class="fg" style="margin-bottom:8px">
+      <label>Número de ticket</label>
+      <input type="text" id="r-ticket" class="fi" readonly style="background:var(--bg3);color:var(--green2);font-family:'DM Mono';font-weight:700;font-size:14px">
+    </div>
+    <div class="fg full"><label>Cliente</label>
+      <select id="r-cli" class="fi" onchange="autoFillSrv('r')"><option value="">— Seleccionar —</option></select>
+    </div>
+    <!-- Card cliente readonly -->
+    <div class="cli-card" id="r-cli-info" style="display:none">
+      <div class="cli-card-row">
+        <div class="cli-card-item"><div class="cli-card-label">Región</div><div class="cli-card-val" id="rci-reg">—</div></div>
+        <div class="cli-card-item"><div class="cli-card-label">Fruta</div><div class="cli-card-val" id="rci-fru">—</div></div>
+        <div class="cli-card-item"><div class="cli-card-label">Contacto</div><div class="cli-card-val" id="rci-nom">—</div></div>
+        <div class="cli-card-item"><div class="cli-card-label">Teléfono</div><div class="cli-card-val" id="rci-tel">—</div></div>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="fg full"><label>Repuesto solicitado</label>
+        <textarea id="r-desc" class="fi" style="min-height:70px" placeholder="Describir el repuesto o repuestos necesarios..."></textarea>
+      </div>
+      <div class="fg"><label>Sección de la máquina</label>
+        <select id="r-sec" class="fi"><option value="">—</option>
+          <option>Infeed</option><option>Calibrador</option><option>Llenado / Paletizado</option>
+          <option>Toda la línea</option><option>Otro</option>
+        </select>
+      </div>
+      <div class="fg"><label>Fecha que lo necesita</label><input type="date" id="r-fecha" class="fi"></div>
+      <div class="fg"><label>Responsable</label><input type="text" id="r-resp" class="fi" placeholder="Quién gestiona el repuesto"></div>
+      <div class="fg"><label>Estado</label>
+        <select id="r-est" class="fi">
+          <option>Pendiente</option><option>En proceso</option><option>Entregado</option><option>Cerrado</option>
+        </select>
+      </div>
+      <div class="fg full"><label>Comentarios</label>
+        <textarea id="r-com" class="fi" style="min-height:60px" placeholder="Urgencia, proveedor sugerido, referencia del repuesto..."></textarea>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)">
+      <button class="btn bg" onclick="cerrar('m-repuesto')">Cancelar</button>
+      <button class="btn bp" onclick="guardarRepuesto()">Guardar repuesto</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+
+const CB = [
+  {r:1,n:"C.CAMP DE VILA NOVA CASTELLO (Exagro)",reg:"CASTELLON",fru:"NARANJA",inf:"FOMESA",eq_inf:"Despaletizador (3), Linea tratamiento",cal:"FOMESA",eq_cal:"Calibrador Fomesa",pal:"",eq_pal:"FOMESA",nom:"Paletizadores (11), Fompack (4)",cargo:"José María Ortega",tel:"Responsable Técnico",email:"674028783"},
+  {r:2,n:"PERALES Y FERRER, S.L.",reg:"ALICANTE",fru:"LIMON",inf:"FOMESA",eq_inf:"Despaletizador (2)",cal:"COMPAC/TOMRA",eq_cal:"Calibradores Compac (2)",pal:"",eq_pal:"FOMESA",nom:"Paletizadores (6)",cargo:"Alfonso",tel:"Jefe de Mantenimiento",email:"679406947"},
+  {r:3,n:"GARCIA ARANDA, S.L.",reg:"MURCIA",fru:"LIMON",inf:"FOMESA",eq_inf:"Despaletizador (1)(2)",cal:"COMPAC/TOMRA",eq_cal:"Compac",pal:"",eq_pal:"FOMESA",nom:"Paletizadores (10), Llenadoras (6)",cargo:"Sebastian",tel:"Jefe de Mantenimiento",email:"669812495"},
+  {r:4,n:"DIAZ DIAZ, LEOCADIO",reg:"CANARIAS",fru:"TOMATE/AGUACATE",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"Leocadio Diaz",tel:"Gerente General",email:""},
+  {r:5,n:"S.A.T. MARGUI Nº-9285",reg:"MADRID",fru:"MELONES/SANDIA",inf:"FOMESA",eq_inf:"Despaletizador (2), RRT",cal:"FOMESA",eq_cal:"Calibrador Fomesa Melon",pal:"",eq_pal:"FOMESA",nom:"Paletizadores (10)",cargo:"Raul",tel:"Jefe de Mantenimiento",email:"680986031"},
+  {r:6,n:"COPROHNIJAR SDAD.COOP.APA N-1",reg:"ALMERIA",fru:"TOMATE",inf:"",eq_inf:"",cal:"COMPAC/TOMRA",eq_cal:"Calibrador Compac Sorma",pal:"",eq_pal:"FOMESA",nom:"Pesadoras a granel (11)",cargo:"Joaquin",tel:"Gerente de Planta",email:""},
+  {r:7,n:"AGRIC SAN JOSE DE ALCASSER,COOP.V.",reg:"VALENCIA",fru:"NARANJA",inf:"FOMESA",eq_inf:"Despaletizador (2)",cal:"FOMESA",eq_cal:"",pal:"",eq_pal:"FOMESA",nom:"Paletizadores (6)",cargo:"Jorge",tel:"Jefe de Mantenimiento",email:"618636853"},
+  {r:8,n:"AGROAL COOP. V. (GRUPO CLASOL)",reg:"CASTELLON",fru:"NARANJA/CLEMENTINA",inf:"",eq_inf:"",cal:"FOMESA",eq_cal:"",pal:"",eq_pal:"FOMESA",nom:"Fompack (6)",cargo:"Lucre/Nacho Guerola",tel:"Gerente de Planta",email:"977573202"},
+  {r:9,n:"AGRIOS SELECTOS, S.L.",reg:"VALENCIA",fru:"NARANJA/CLEMENTINA",inf:"COMPAC/TOMRA",eq_inf:"Despaletizador (2)",cal:"COMPAC/TOMRA",eq_cal:"Compac (2)",pal:"",eq_pal:"FOMESA",nom:"Paletizador (4)",cargo:"Domingo",tel:"Jefe de Mantenimiento",email:"665015361"},
+  {r:10,n:"TANA, S.A.",reg:"MURCIA",fru:"LIMON",inf:"",eq_inf:"",cal:"COMPAC/TOMRA",eq_cal:"Calibradores Compac",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:11,n:"SAT VIDRIO",reg:"ARAGON",fru:"CEREZAS",inf:"",eq_inf:"",cal:"COMPAC/TOMRA",eq_cal:"COMPAC",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:12,n:"VALLFRUT COOP. V.",reg:"VALENCIA",fru:"NARANJA/CLEMENTINA",inf:"SIENZ",eq_inf:"",cal:"COMPAC/TOMRA",eq_cal:"Compac SLS",pal:"",eq_pal:"SIENZ",nom:"",cargo:"Israel Mingarro",tel:"Jefe de Mantenimiento",email:"657960383"},
+  {r:13,n:"FLC TECHNOLOGIES (Citrosol)",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"Miguel Angel Hinarejos",tel:"Responsable Técnico",email:"666457055"},
+  {r:14,n:"AGRIOS EL CARRIL, S.L.",reg:"MURCIA",fru:"LIMON",inf:"FOMESA",eq_inf:"Despaletizador (2)",cal:"COMPAC/TOMRA",eq_cal:"Compac (2)",pal:"",eq_pal:"FOMESA",nom:"Llenadoras (6), Paletizadores (6)",cargo:"Pedro",tel:"Jefe de Mantenimiento",email:"629165294"},
+  {r:15,n:"S.A.T. AGROLEVANTE",reg:"ALMERIA",fru:"NARANJA/CLEMENTINA",inf:"FOMESA",eq_inf:"Despaletizador",cal:"FOMESA",eq_cal:"Linea tratamiento",pal:"",eq_pal:"",nom:"",cargo:"Cristobal",tel:"Jefe de Mantenimiento",email:"666528247"},
+  {r:16,n:"MUNDOSOL QUALITY, S.L.",reg:"MURCIA",fru:"LIMON",inf:"",eq_inf:"",cal:"COMPAC/TOMRA",eq_cal:"COMPAC (4)",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:17,n:"EUROCASTELL CAÑA, S.L.",reg:"MALAGA",fru:"CHERRY",inf:"",eq_inf:"",cal:"COMPAC/TOMRA",eq_cal:"SFS COMPAC",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:18,n:"SUNARAN S.A.T. N-CO-0035",reg:"CORDOBA",fru:"NARANJA",inf:"",eq_inf:"",cal:"COMPAC/TOMRA",eq_cal:"Fomesa (1), Compac (2)",pal:"",eq_pal:"",nom:"",cargo:"JuanMa",tel:"Jefe de Mantenimiento",email:"678689258"},
+  {r:19,n:"FRUTAS VIVES Y BERNA, S.L.",reg:"ALICANTE",fru:"NARANJA/LIMON",inf:"",eq_inf:"",cal:"FOMESA",eq_cal:"Calibradores Fomesa (2)",pal:"",eq_pal:"",nom:"",cargo:"Manolo",tel:"Encargado",email:"661941625"},
+  {r:20,n:"FRUTAS POVEDA, S.A.",reg:"MURCIA",fru:"LIMON",inf:"SIENZ",eq_inf:"Volcadores (2)",cal:"SIENZ",eq_cal:"Calibrador Sienz (2)",pal:"",eq_pal:"FOMESA",nom:"Llenadoras (4), Llenado bins (8)",cargo:"Juan/Fran",tel:"Jefe de Mantenimiento",email:"696965645"},
+  {r:21,n:"AGRO-CITRICA DE PICASENT COOP.",reg:"VALENCIA",fru:"NARANJA/CLEMENTINA",inf:"SIENZ",eq_inf:"Despaletizado",cal:"SIENZ",eq_cal:"Calibrador Sienz",pal:"",eq_pal:"FOMESA",nom:"Paletizadores (10)",cargo:"Paco",tel:"Gerente de Planta",email:""},
+  {r:22,n:"COCALNI COOP. V.",reg:"CASTELLON",fru:"CLEMENTINA",inf:"",eq_inf:"",cal:"FOMESA",eq_cal:"Fomesa",pal:"",eq_pal:"FOMESA",nom:"Paletizadores (9)",cargo:"Eloy",tel:"Jefe de Mantenimiento",email:"687082677"},
+  {r:23,n:"S.A.T. NUM-138CV SERIFRUIT",reg:"CASTELLON",fru:"NARANJA/CLEMENTINA",inf:"",eq_inf:"",cal:"COMPAC/TOMRA",eq_cal:"Compac, pulmones inteligentes",pal:"",eq_pal:"COMPAC/TOMRA",nom:"Trafico portillas",cargo:"",tel:"",email:""},
+  {r:24,n:"S.A.T. NU-9843 CAMPO TEJAR DEL SEGU",reg:"MURCIA",fru:"LIMON",inf:"FOMESA",eq_inf:"Volcador, Tratamiento",cal:"FOMESA",eq_cal:"Calibrador Fomesa 8 calles",pal:"",eq_pal:"FOMESA",nom:"Llenado cajas",cargo:"Maria",tel:"Encargado",email:"610082145"},
+  {r:25,n:"S.A.T. NUM-6685 ORTUÑOS RL",reg:"MURCIA",fru:"LIMON/NARANJA",inf:"FOMESA",eq_inf:"Despaletizador, Volcador",cal:"COMPAC/TOMRA",eq_cal:"Compac",pal:"",eq_pal:"FOMESA",nom:"Llenadoras, Tratamiento",cargo:"",tel:"",email:""},
+  {r:26,n:"AGRO RINCON, S.L.",reg:"CANARIAS",fru:"AGUACATE",inf:"",eq_inf:"",cal:"COMPAC/TOMRA",eq_cal:"Compac (1)",pal:"",eq_pal:"",nom:"",cargo:"Carlos",tel:"Gerente General",email:"658836461"},
+  {r:27,n:"S.A.T.9592 JULIANO BONNY GOMEZ",reg:"CANARIAS",fru:"TOMATE",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:28,n:"SAN ALFONSO COOP. V. (GRUPO CLASOL)",reg:"TARRAGONA",fru:"NARANJA",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"FOMESA",nom:"Paletizador (1)",cargo:"Lucre",tel:"Gerente de Planta",email:"977573202"},
+  {r:29,n:"AM FRESH SPAIN CITRUS S.L.(BOLLO)",reg:"VALENCIA",fru:"NARANJA",inf:"",eq_inf:"",cal:"COMPAC/TOMRA",eq_cal:"Compac 2 calles",pal:"",eq_pal:"",nom:"",cargo:"Carlos",tel:"Responsable Técnico",email:"655562022"},
+  {r:30,n:"FRUCOSUR, S.L.(FRUPALE)",reg:"SEVILLA",fru:"NARANJA",inf:"FOMESA",eq_inf:"Despaletizador",cal:"FOMESA",eq_cal:"Fomesa 8 calles",pal:"",eq_pal:"",nom:"",cargo:"Carlos",tel:"Encargado",email:"690631526"},
+  {r:31,n:"HORTALIZAS DIOSUR, S.L.",reg:"ALMERIA",fru:"TOMATE",inf:"",eq_inf:"",cal:"FOMESA",eq_cal:"Fomesa 2 calles",pal:"",eq_pal:"",nom:"",cargo:"Paco",tel:"Encargado",email:"662129232"},
+  {r:32,n:"COOP.VINICOLA QUATRETONDA CO.V",reg:"VALENCIA",fru:"NARANJA",inf:"FOMESA",eq_inf:"Despaletizador (6), Volcador torsion",cal:"FOMESA",eq_cal:"Fomesa",pal:"",eq_pal:"FOMESA",nom:"Llenado alt",cargo:"Jairo",tel:"Jefe de Mantenimiento",email:"657536883"},
+  {r:33,n:"S.A.T. 2803 TROPS",reg:"MALAGA",fru:"AGUACATE",inf:"",eq_inf:"",cal:"COMPAC/TOMRA",eq_cal:"COMPAC - TOMRA",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:34,n:"HORFRUSA, S.L.",reg:"MURCIA",fru:"TOMATE",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:35,n:"SHECRI FRUIT, S.L.",reg:"VALENCIA",fru:"KIWI",inf:"",eq_inf:"",cal:"COMPAC/TOMRA",eq_cal:"Calibrador Compac",pal:"",eq_pal:"FOMESA",nom:"Llenadora bin (1)",cargo:"Seila",tel:"Encargado",email:"636942266"},
+  {r:36,n:"AGRICOLA CITRICS DELTA, S.L.",reg:"TARRAGONA",fru:"NARANJA",inf:"",eq_inf:"",cal:"COMPAC/TOMRA",eq_cal:"Calibrador Tomra",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:37,n:"S.A.T.NUM-6871 NICOLASES",reg:"CANARIAS",fru:"TOMATE",inf:"",eq_inf:"",cal:"COMPAC/TOMRA",eq_cal:"COMPAC TOMRA",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:38,n:"MARGOZ, S.L.",reg:"MURCIA",fru:"LIMON",inf:"FOMESA",eq_inf:"Despaletizador (2)",cal:"COMPAC/TOMRA",eq_cal:"Compac 6 VIAS",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:39,n:"COAGRISAN O.P. 1011-551",reg:"CANARIAS",fru:"TOMATE",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:40,n:"FRESH TOM EXPORT, S.L.",reg:"CANARIAS",fru:"",inf:"",eq_inf:"",cal:"FOMESA",eq_cal:"Fomesa",pal:"",eq_pal:"COMPAC/TOMRA",nom:"Compac",cargo:"Ismael",tel:"Encargado",email:"609565656"},
+  {r:41,n:"JALHUCA EXPLOTACIONES, S.L.",reg:"MALAGA",fru:"AGUACATE",inf:"",eq_inf:"",cal:"SIENZ",eq_cal:"Calibrador Sienz solo peso 4 vias",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:42,n:"MADREMIA, S.L.",reg:"VALENCIA",fru:"NARANJA",inf:"FOMESA",eq_inf:"Despaletizador, Tratamiento",cal:"REEMOON",eq_cal:"Cambio Reemoon",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:43,n:"MEDENA IMPORT-EXPORT S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:44,n:"COOP.AGRIC.LEVANTE SUR COOP.",reg:"MURCIA",fru:"TOMATE/SANDIA/LIMON",inf:"COMPAC/TOMRA",eq_inf:"Volcador bins, RRT",cal:"COMPAC/TOMRA",eq_cal:"Calibrador Compac",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:45,n:"VILODI, S.L.",reg:"CASTELLON",fru:"NARANJA/CLEMENTINA",inf:"FOMESA",eq_inf:"Despaletizador cajas",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:46,n:"HERFRU, S.A.",reg:"MURCIA",fru:"LIMON/TOMATE",inf:"FOMESA",eq_inf:"Despaletizador, Llenadoras bins (6)",cal:"COMPAC/TOMRA",eq_cal:"Compac (2)",pal:"",eq_pal:"",nom:"",cargo:"Antonio",tel:"Jefe de Mantenimiento",email:"696714779"},
+  {r:47,n:"FRUTAS BERI S.A.",reg:"",fru:"",inf:"SUNKIST",eq_inf:"",cal:"SUNKIST",eq_cal:"",pal:"",eq_pal:"SUNKIST",nom:"",cargo:"",tel:"",email:""},
+  {r:48,n:"S.A.T. NUM-2457 SAN CAYETANO(ALPI)",reg:"MURCIA",fru:"PIMIENTOS",inf:"",eq_inf:"",cal:"SIENZ",eq_cal:"Calibrador Sienz Copas",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:49,n:"ESPALMEX, S.L.",reg:"SEVILLA",fru:"NARANJA",inf:"",eq_inf:"",cal:"COMPAC/TOMRA",eq_cal:"Calibrador Compac",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:50,n:"SAT CITRICOS DEL ANDARAX",reg:"ALMERIA",fru:"NARANJA",inf:"FOMESA",eq_inf:"Despaletizador cajas",cal:"FOMESA",eq_cal:"Fomesa",pal:"",eq_pal:"",nom:"",cargo:"Javier",tel:"Jefe de Mantenimiento",email:"608847295"},
+  {r:51,n:"SANZ-BARBERA, S.L.",reg:"VALENCIA",fru:"KAKI",inf:"",eq_inf:"",cal:"SIENZ",eq_cal:"Calibrador Sienz 4 vias solo peso",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:52,n:"AGRUPACIÓN HORTOFRUTICOLAS LUCAS SL",reg:"MURCIA",fru:"LIMON",inf:"FOMESA",eq_inf:"Polifrut, Despaletizar",cal:"FOMESA",eq_cal:"Linea Fomesa",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:53,n:"MANGUAN E HIJOS, S.L.",reg:"VALENCIA",fru:"NARANJA",inf:"FOMESA",eq_inf:"",cal:"COMPAC/TOMRA",eq_cal:"Calibrador Compac",pal:"",eq_pal:"FOMESA",nom:"Paletizadores",cargo:"",tel:"",email:""},
+  {r:54,n:"FRANCO MARIN, S.L.",reg:"MURCIA",fru:"LIMON",inf:"FOMESA",eq_inf:"Linea completa",cal:"COMPAC/TOMRA",eq_cal:"Calibrador Compac",pal:"",eq_pal:"FOMESA",nom:"Linea Fomesa",cargo:"",tel:"",email:""},
+  {r:55,n:"FRUTAS MOLINA CANO SL",reg:"MURCIA",fru:"NARANJA/LIMON",inf:"FOMESA",eq_inf:"",cal:"SIENZ",eq_cal:"Cambio calibrador Sienz",pal:"",eq_pal:"FOMESA",nom:"",cargo:"German",tel:"Jefe de Mantenimiento",email:"650425870"},
+  {r:61,n:"SOLDEBRE S.C.C.L.",reg:"TARRAGONA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:62,n:"BETXI EXPORT COOP. V.",reg:"CASTELLON",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:63,n:"FRUTAS APEMAR, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:64,n:"CITROGEST SERVCIOS EMPRESARIALES SL",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:65,n:"MAQ.HORTOFRUTICOLA EMF, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:66,n:"ALIMENTOS DEL MEDITERRANEO,S.COOP.L",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:67,n:"LEVEL FRUIT, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:68,n:"FRUTAS MOLERA, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:69,n:"KYMEY, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:70,n:"FRUTAS CONDISO S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:71,n:"FRUTAS CITRICOS LA RUBIA, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:72,n:"INDUSTRIAL 57 GROUP IMPORT AND EXPO",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:73,n:"FRUTAS Y VERDURAS YANES, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:74,n:"UNIVALL COOP. V.",reg:"VALENCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:75,n:"YAFER AGRICOLA, S.A.T NUM-131",reg:"ALICANTE",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:76,n:"VALIER AGRICOLA S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:77,n:"ALBENFRUIT, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:78,n:"FRUTAS LA CARRICHOSA, S.C.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:79,n:"ASP FRUIT, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:80,n:"NO USAR-YEFRUT",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:81,n:"EXPOEUROFRUT, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:82,n:"COOPERATIVA DEL CAMP SANT GAIETA SC",reg:"TARRAGONA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:83,n:"SAT LA FAST",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:84,n:"COX DYA SL",reg:"ALICANTE",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:85,n:"AGROALIMENTARIA DEL SUR, S.A.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:86,n:"PRODUCTOS CITROSOL, S.A.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:87,n:"COOP.AGRICOLA PUZOL SDAD.COOP.",reg:"VALENCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:88,n:"TECNOLOGÍAS AVANZADAS AGRICOLAS SL",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:89,n:"S.A.T. NUM-9909 LAS PRIMICIAS",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:90,n:"VALSIC, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:91,n:"ECORIBERA, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:92,n:"PEDRALBA VINICOLA S.COOP.V",reg:"VALENCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:93,n:"S.A.T.CITRICOS DE COVADONGA N-556 C",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:94,n:"BOLLO NATURAL FRUIT, S.L.U.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:95,n:"C.C.A.PORTA DO RIO MIÑO, S.C.G.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:96,n:"GRACIANO MARIN SANCHEZ",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:97,n:"SERVICIO INTEGRAL DE BANDAS, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:98,n:"PORTFRUIT 2003, S.A.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:99,n:"AGRICOLA NAVARRO DE HARO, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:100,n:"FRUITS GRADER S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:101,n:"Joan Duran Duran",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:102,n:"AGROPAIS TRANS SL",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:103,n:"SOMOPAR, S.A.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:104,n:"S.A.T. FRESANZ 186 CV",reg:"VALENCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:105,n:"HANY MOON S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:106,n:"LAYPOVE SAT N-70 CV",reg:"VALENCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:107,n:"LA CANAREVA, S.L.",reg:"CANARIAS",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:108,n:"MARIN GIMENEZ HNOS, S.A.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:109,n:"INSTIT.VALENCIANO INVESTIG.AGRARIAS",reg:"VALENCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:110,n:"COOP.VITIVIN.C.R.POBLA DUC",reg:"VALENCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:111,n:"AGROFRESH FRUIT PROTECTION SA",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:112,n:"CITRUS GEA BELMONTE, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:113,n:"PEIRO Y EIDA S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:114,n:"PITTELOUD FRUITS, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:115,n:"FRUTAS LLOBERA, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:116,n:"FRUTAS TOMASIN LA ALMUNIA S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:117,n:"TRANSPAIS GRAN VOLUMEN, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:118,n:"FRUTAS PLASENCIA, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:119,n:"JOYAS DEL TURIA, S.L.",reg:"VALENCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:120,n:"GRUPO FRUTAS AQUA INNOVA S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:121,n:"FRUTAS PEYFI, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:122,n:"COOP. HORTICOLA ALZIRA - ALZICOOP",reg:"VALENCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:123,n:"LEGUFRUT AGRO, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:124,n:"TALLERES ARCOT, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:125,n:"EXPLOT.AGRICOLAS FRUPALE, S.A",reg:"SEVILLA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:126,n:"DULCESA, S.L. UNIPERSONAL",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:127,n:"LASARTE SAT SE-0037",reg:"SEVILLA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:128,n:"OSCAR BENLLOCH TAMARIT",reg:"VALENCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:129,n:"COFRUITS SCL",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:130,n:"HERMANOS VAZQUEZ, S.A.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:131,n:"HIJOS DE JOAQUIN RODRIGUEZ,S.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:132,n:"EURO COCI COOP. V",reg:"CASTELLON",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:133,n:"PALMAFRUT, S.L",reg:"CANARIAS",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:134,n:"TRANSMANTEMUR SL",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:135,n:"SUMINISTROS TOMAS BELTRAN, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:136,n:"FOMENTO AGRICOLA ANDALUZ SAT",reg:"SEVILLA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:137,n:"FRUITES BOIXADOS, S.A.",reg:"TARRAGONA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:138,n:"BIO LANZAC, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:139,n:"ALCAFRUIT PRODUCTORES DEL CAMPO,SCA",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:140,n:"DECCO IBERICA POST COSECHA S.A.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:141,n:"COOP. VINICOLA DE LLIRIA, S.COOP.V",reg:"VALENCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:142,n:"no usar -Frutas Plasencia SL",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:143,n:"APEEL SCIENCES SPAIN, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:144,n:"FOMESA FRUITECH, S.L.U.",reg:"VALENCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:145,n:"S.A.T. NUM.97 BLANCASOL",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:146,n:"SDAD. COOP. SANT DOMENEC",reg:"TARRAGONA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:147,n:"NULEXPORT COOP. V.",reg:"CASTELLON",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:148,n:"EXTREMADURA SANA, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:149,n:"CAJA RURAL SAN ROQUE ALMENARA SCCV",reg:"CASTELLON",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:150,n:"FERIMET, SLU",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:151,n:"TALLERES OLIVER Y CIA, S.L.",reg:"CASTELLON",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:152,n:"AGESCO, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:153,n:"BARBER CABALLERO, S.L.",reg:"CASTELLON",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:154,n:"SAT AGRIOS VALENCIA Nº 9928",reg:"VALENCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:155,n:"FRUTAS Y PATATAS DE LEVANTE,SL",reg:"ALICANTE",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:156,n:"EL ESCOBAR, S.C.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:157,n:"PUENTEFRESH, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:158,n:"SDAD.COOP.CALLOSA D'ENSARRIA",reg:"ALICANTE",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:159,n:"AGRUPAEJIDO,S.A. (LAS MARINAS)",reg:"ALMERIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:160,n:"COOP. EXPORTA. MAZARRON COEXMA",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:161,n:"FRUTAS MARY PILI, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:162,n:"EUROCASTELL, SAT",reg:"MALAGA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:163,n:"FRUTAS TORRE MOLINS, S.L.",reg:"TARRAGONA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:164,n:"ANTONIO PUJANTE, S.A.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:165,n:"DIOSUR GARANTIA, S.L.U.",reg:"ALMERIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:166,n:"REALENGO Y MAS DEL OLI SL",reg:"ALICANTE",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:167,n:"ERNESTO TUDELA, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:168,n:"CONSERVAS Y FRUTAS, S.A.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:169,n:"COOP.EL ALBARICOQUERO SDAD.COOP.LTD",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:170,n:"PONS REDONDO GROUP SLU",reg:"TARRAGONA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:171,n:"ORGANICOX S.A.T. N-9992",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:172,n:"Catafruit",reg:"TARRAGONA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:173,n:"SAT NUMERO 9504 URCISOL",reg:"ALMERIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:174,n:"REYES GUTIERREZ, S. L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:175,n:"BERNARDO GARCIA CRUZ",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:176,n:"AGER CULT SL",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:177,n:"RAIMUNDO GARCIA Y CIA S.A",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:178,n:"UNISERRAL, S.A.U.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:179,n:"S.A.T. Nº 9912 CITRICOS VALENCIANOS",reg:"VALENCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:180,n:"CONCA DE LA TORDERA S.C.C.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:181,n:"AGRIBUR, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:182,n:"BIELSA & BERGANZA, S.L.",reg:"ARAGON",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:183,n:"SERVICIO ANDALUZ DE MANT.INDUSTRIAL",reg:"SEVILLA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:184,n:"AGRICOLA AGUILEÑA 119 SL",reg:"ALMERIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:185,n:"UNIO FRUITS S.C.C.L.",reg:"TARRAGONA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:186,n:"CIA FRU&VER MADRID SL",reg:"MADRID",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:187,n:"COOP.AGRI.SAN ISIDRO LABRADOR",reg:"CASTELLON",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:188,n:"FRUTAS ISMAEL, S.L.",reg:"ALICANTE",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:189,n:"TRASOAM INVERSIONES, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:190,n:"COOP.AGRIC. LA CONSTANCIA POBLA V.",reg:"CASTELLON",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:191,n:"NATURE TROPICAL FRUITS, S.L.U.",reg:"MALAGA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:192,n:"GERMAN SANCHO Y CIA, S.A.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:193,n:"S.A.T. NUM-9388 O.P.C. 381 CIPLA",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:194,n:"S.A.T. NUM-64CV CITRUSALGE",reg:"ALICANTE",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:195,n:"SUCESOR.TECNIC.CALIBRADOR. FRUTA SL",reg:"VALENCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:196,n:"CHATARRAS Y METALES GARRIDO, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:197,n:"HORTICOLAS GALEGAS, S.L.U.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:198,n:"VICENTE PERIS, S.A.",reg:"VALENCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:199,n:"EXPORTADORA D,AGRIS D,ALCANAR S.COO",reg:"TARRAGONA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:200,n:"HNOS. GARCIA CABALLERO, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:201,n:"PALEMPORDANES, S.L.",reg:"TARRAGONA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:202,n:"FRUTAS EL PORRO, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:203,n:"AGRICOLA MARVIC ORGANIC, SAT 10018",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:204,n:"EXPLOTACIONES AGRICOLAS HEBAL, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:205,n:"AGROPECUARIA LOMAS DE AMENAS, S.L.",reg:"ALMERIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:206,n:"AGRICOLA ALGINET SDAD. COOP. V.",reg:"VALENCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:207,n:"CASIALBORAN, S.L.",reg:"ALMERIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:208,n:"MOYCA GRAPES, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:209,n:"COOP.AGRICOLA SANT BERNAT COOP.V.",reg:"CASTELLON",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:210,n:"S.A.T. RAYMI N. 274-05",reg:"ALMERIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:211,n:"COOP.AGR. ALTEA SDAD. COOP. LTDA",reg:"ALICANTE",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:212,n:"TRANSWORLD SPAIN, S.L. (TOYA)",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:213,n:"FRUTAS AQUA SAT 9988 OPFH 959",reg:"VALENCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:214,n:"MAQUIMUR 2014, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:215,n:"LA TURISANA SDAD. COOP. V.",reg:"CASTELLON",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:216,n:"DISTINET MURCIA, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:217,n:"TENA GRACIA, JUAN",reg:"ARAGON",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:218,n:"SAT MOYCA MU-9857",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:219,n:"PRODUCTOS EMIANJO, S.L.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:220,n:"DELICIAS DEL GUADALOPE, S.L.",reg:"ARAGON",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:221,n:"LAUROCITRUS, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:222,n:"FRUTAS EL CARACOL, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:223,n:"INDUSER PONIENTE, S.L.",reg:"ALMERIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:224,n:"EL CIRUELO, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:225,n:"MERCE BORRAS PUIGGROS",reg:"TARRAGONA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:226,n:"RIOTINTO CITRICOS, S.L.",reg:"SEVILLA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:227,n:"LIMONES LAZARO EL LURDO, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:228,n:"AMSAFRESH, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:229,n:"CITRICOS GUILLEM SL",reg:"VALENCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:230,n:"MONTAJES ELECTR.JOAQUIN CARRILLO CB",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:231,n:"COOP.SAN MIGUEL COFRUVAL",reg:"VALENCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:232,n:"COPLACA, S. COOP.",reg:"CANARIAS",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:233,n:"GOLDEN FOOD, S.A.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:234,n:"CIA IBERICA BROGDEX, S.A.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:235,n:"SAT N 197 FRUILAR DE RESP. LIMITA.",reg:"ALICANTE",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:236,n:"S.A.T. 10033 CITRUSTEN",reg:"CASTELLON",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:237,n:"ARC EUROBANAN GALICIA, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:238,n:"GRUPO AVICOLA LA CRESTA S.L.U.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:239,n:"MICOFRUIT IS LIFE, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:240,n:"RIBERCAMP COOP. V.",reg:"TARRAGONA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:241,n:"AGRONATIVA, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:242,n:"FINCA GREEN GOLD, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:243,n:"HNOS. CLAVERIA ESPONERA, C.B.",reg:"ARAGON",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:244,n:"MALINA CITRUS SL",reg:"ALICANTE",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:245,n:"HERMANOS LOZANO ROIG CB",reg:"ALICANTE",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:246,n:"BOYQUEL, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:247,n:"S.A.T. TOMASOL",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:248,n:"TECNOVILL, S.L.",reg:"CASTELLON",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:249,n:"CITRICS SERRET, S.L.V.",reg:"TARRAGONA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:250,n:"CLATOR, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:251,n:"FRUTAS GOMEZ SELMA, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:252,n:"S.A.T NUM-7397 VEGA SAN ANTONIO",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:253,n:"COOP. GRAN TARAJAL",reg:"CANARIAS",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:254,n:"VALFRESH EXPORT, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:255,n:"SENER FRUIT,S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:256,n:"ONTIELEVA, S.L.U.",reg:"CASTELLON",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:257,n:"ALFOSEA HERMANOS, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:258,n:"AGREXPA EXPORT, S.L.",reg:"ALMERIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:259,n:"FRUTAS RADA, S.A.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:260,n:"AGRICOLAS QUITO, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:261,n:"GRANADAS DE ELCHE SLU",reg:"ALICANTE",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:262,n:"ASUNCION LOPEZ, S.L.U.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:263,n:"FRANCISCO ANTONIO MARROQUI GARRIGOS",reg:"ALICANTE",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:264,n:"SAT H/0005 FRESCITRUS OPFH Nº 668",reg:"CASTELLON",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:265,n:"CENTRAL HORTOFR.DEL BIERZO",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:266,n:"ANTONIO ANCHON SAMA",reg:"ALMERIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:267,n:"ENERGY SOLAR TECH, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:268,n:"VALSUHE, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:269,n:"SAT 639CV MAS VALLES ALTOS",reg:"ALICANTE",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:270,n:"BOLLO INTERNATIONAL FRUITS, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:271,n:"CITRUSLANDIA, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:272,n:"INTEC SOLUCIONES INDUSTRIALES, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:273,n:"HORTOFRUTICOLA DEL GUADALENTIN SL",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:274,n:"TRANSPAIS OPERADOR LOGISTICO, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:275,n:"JUAN Y JUAN INDUSTRIAL, S.L.U.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:276,n:"SDAD.COOP.LTDA.C.SARDINA SUR-COLICA",reg:"CANARIAS",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:277,n:"CITRIFRESC S.L.",reg:"CASTELLON",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:278,n:"FRANCISCO JAVIER PALOMERA RODRIGUEZ",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:279,n:"EBREFRUIT S.A.T. 9486",reg:"TARRAGONA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:280,n:"ECO-RECICLADORA DEL NOROESTE, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:281,n:"COAGUILAS S.C.L.",reg:"ALMERIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:282,n:"EXPLUM SDAD. COOP.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:283,n:"COOP.CITRI.S.ALFONSO-ULLDECONA0835",reg:"TARRAGONA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:284,n:"INFOMANAGER PACKING SL",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:285,n:"ZAM ZUM, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:286,n:"GESAGRA, S.A.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:287,n:"NATUREBRE EXPORT, S.L.",reg:"TARRAGONA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:288,n:"CAMARA CITRICOLA AMPOSTA SAT CAT",reg:"TARRAGONA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:289,n:"RODRIGUEZ CORDOBA MECANIZADOS SLL",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:290,n:"SOCIEDAD COOPERATIVA LA PILA",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:291,n:"SAT EL TORMO 464 CV",reg:"VALENCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:292,n:"SEYCROS, SL",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:293,n:"FRUTAS AL-KAÑA. S.L.",reg:"CASTELLON",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:294,n:"CYL IBERSNACKS, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:295,n:"AGRIOCITRICOS HNOS.GALLEGO SL",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:296,n:"DEST.BORDAS CHINCHURRETA,S.A.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:297,n:"AGRICULTORES DEL SURESTE SAT N-9688",reg:"ALMERIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:298,n:"JUAN OLASO, S.A.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:299,n:"FRESAMAT, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:300,n:"AGRICOLA GIL, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:301,n:"STORE MECH, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:302,n:"TECNODRAGO, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:303,n:"MAQUINARIA ARSERTEC, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:304,n:"AC TECNIBAT, S.L.U.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:305,n:"VICENTE ALCOVER OLTRA",reg:"ALICANTE",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:306,n:"MAZAFRESH, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:307,n:"MARINA SAFOR CITRICOS, S.L.",reg:"VALENCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:308,n:"ESXCO, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:309,n:"ALONSO BATALLER, JUAN MARCOS",reg:"ALICANTE",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:310,n:"EXPLOTACIONES AGRICOLAS SAMPER,S.C.",reg:"ARAGON",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:311,n:"AGRICULTURA EXTRATERRESTRE SL",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:312,n:"LA MARAÑA, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:313,n:"TRANSPORTES CAMPILLO, S.A.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:314,n:"T.I.A.M. SAVINO DEL BENE SL",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:315,n:"FRANCISCO TARANCON MATEO",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:316,n:"DANIEL FONTET, S.A.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:317,n:"FRUTAS TORREBLANCA, S. L.",reg:"ALICANTE",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:318,n:"HORFRUMED, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:319,n:"F. BERBEL AUTOMATISMOS, S.L.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:320,n:"NALDA Y ESCRIVA, S.L.",reg:"ALICANTE",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:321,n:"AGROLOGISTICA ALBORAN, S.L.",reg:"ALMERIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:322,n:"MAYPE FRUT, S.A.",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:323,n:"MELLADO FERNANDEZ, EMILIO",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:324,n:"MOLINA CANO, JOSE",reg:"MURCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:325,n:"RUIZ DE MIER LANZAC, S.L.",reg:"",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:326,n:"SAT N.1401 CAT ECOFRUIT",reg:"TARRAGONA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:327,n:"SDA.COOP.VALENCIANA COELTRASUM",reg:"VALENCIA",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:328,n:"VALERON, S.L.",reg:"CANARIAS",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""},
+  {r:329,n:"JOAQUIN LLUSAR Y CIA, S.A.",reg:"CASTELLON",fru:"",inf:"",eq_inf:"",cal:"",eq_cal:"",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:""}
+];
+
+const SK = [
+  {r:"SK01",n:"AM Fresh Spain Citrus",reg:"VALENCIA",fru:"NARANJA",inf:"SUNKIST",eq_inf:"",cal:"SUNKIST",eq_cal:"GREENVISION — 18 calles — Cárcer",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:"",sk:true},
+  {r:"SK02",n:"Arco Fruits (QP3)",reg:"MURCIA",fru:"LIMON",inf:"SUNKIST",eq_inf:"",cal:"SUNKIST",eq_cal:"QP3 — 6 calles — El Raal",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:"",sk:true},
+  {r:"SK03",n:"Arco Fruits (QP4)",reg:"MURCIA",fru:"LIMON",inf:"SUNKIST",eq_inf:"",cal:"SUNKIST",eq_cal:"QP4 — 6 calles — El Raal",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:"",sk:true},
+  {r:"SK04",n:"Bollo Natural Fruit Centro 1",reg:"MURCIA",fru:"LIMON",inf:"SUNKIST",eq_inf:"",cal:"SUNKIST",eq_cal:"Sunsort Decay System — 12 calles — Torreagüera",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:"",sk:true},
+  {r:"SK05",n:"Bollo Natural Fruit Centro 2",reg:"MURCIA",fru:"LIMON",inf:"SUNKIST",eq_inf:"",cal:"SUNKIST",eq_cal:"Sunsort Decay System — 12 calles — Alhama",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:"",sk:true},
+  {r:"SK06",n:"Citrus Gea Belmonte SL",reg:"MURCIA",fru:"LIMON",inf:"SUNKIST",eq_inf:"",cal:"SUNKIST",eq_cal:"Sunsort — 12 calles — Torreagüera",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:"",sk:true},
+  {r:"SK07",n:"Frutas Apemar (Sunkist)",reg:"MURCIA",fru:"LIMON",inf:"SUNKIST",eq_inf:"",cal:"SUNKIST",eq_cal:"Sunsort Decay System — 6 calles — Alquerías",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:"",sk:true},
+  {r:"SK08",n:"Frutas Beri - Sunsort",reg:"MURCIA",fru:"LIMON",inf:"SUNKIST",eq_inf:"",cal:"SUNKIST",eq_cal:"Sunsort Decay System — 6 calles — Beniel",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:"",sk:true},
+  {r:"SK09",n:"Frutas Beri - QP4 Decay A",reg:"MURCIA",fru:"LIMON",inf:"SUNKIST",eq_inf:"",cal:"SUNKIST",eq_cal:"QP4 Decay System — 6 calles — Beniel",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:"",sk:true},
+  {r:"SK10",n:"Frutas Beri - QP4 Decay B",reg:"MURCIA",fru:"LIMON",inf:"SUNKIST",eq_inf:"",cal:"SUNKIST",eq_cal:"QP4 Decay System — 6 calles — Beniel",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:"",sk:true},
+  {r:"SK11",n:"Frutas Condiso - Con Tratamiento",reg:"MURCIA",fru:"LIMON",inf:"SUNKIST",eq_inf:"",cal:"SUNKIST",eq_cal:"Sunsort Decay System — 6 calles — Alquerías",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:"",sk:true},
+  {r:"SK12",n:"Frutas Condiso - Sin Tratamiento",reg:"MURCIA",fru:"LIMON",inf:"SUNKIST",eq_inf:"",cal:"SUNKIST",eq_cal:"Sunsort — 6 calles — Alquerías",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:"",sk:true},
+  {r:"SK13",n:"Frutas Kymey SL",reg:"MURCIA",fru:"LIMON",inf:"SUNKIST",eq_inf:"",cal:"SUNKIST",eq_cal:"QP4 — 4 calles — El Reloj",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:"",sk:true},
+  {r:"SK14",n:"Hijos Alberto del Cerro - Sunsort",reg:"MURCIA",fru:"LIMON",inf:"SUNKIST",eq_inf:"",cal:"SUNKIST",eq_cal:"Sunsort Decay System — 6 calles — El Raal",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:"",sk:true},
+  {r:"SK15",n:"Hijos Alberto del Cerro - QP4 A",reg:"MURCIA",fru:"LIMON",inf:"SUNKIST",eq_inf:"",cal:"SUNKIST",eq_cal:"QP4 — 6 calles — El Raal",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:"",sk:true},
+  {r:"SK16",n:"Hijos Alberto del Cerro - QP4 B",reg:"MURCIA",fru:"LIMON",inf:"SUNKIST",eq_inf:"",cal:"SUNKIST",eq_cal:"QP4 — 6 calles — El Raal",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:"",sk:true},
+  {r:"SK17",n:"J Gambin",reg:"ALICANTE",fru:"LIMON",inf:"SUNKIST",eq_inf:"",cal:"SUNKIST",eq_cal:"QP4 Hybrid — 8 calles — Cox",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:"",sk:true},
+  {r:"SK18",n:"Malina Citrus",reg:"ALICANTE",fru:"LIMON",inf:"SUNKIST",eq_inf:"",cal:"SUNKIST",eq_cal:"QP3 — 4 calles — La Aparecida",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:"",sk:true},
+  {r:"SK19",n:"Perales y Ferrer SL (Sunkist)",reg:"ALICANTE",fru:"LIMON",inf:"SUNKIST",eq_inf:"",cal:"SUNKIST",eq_cal:"Sunsort Decay System — 6 calles — Bigastro",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:"",sk:true},
+  {r:"SK20",n:"SAT San Cayetano (Sunkist)",reg:"MURCIA",fru:"PIMIENTOS",inf:"SUNKIST",eq_inf:"",cal:"SUNKIST",eq_cal:"SS (sizer) — 6 calles — San Cayetano",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:"",sk:true},
+  {r:"SK21",n:"Yafer Agrícola SAT",reg:"ALICANTE",fru:"NARANJA",inf:"SUNKIST",eq_inf:"",cal:"SUNKIST",eq_cal:"QP4 — 4 calles — Orihuela",pal:"",eq_pal:"",nom:"",cargo:"",tel:"",email:"",sk:true}
+];
+const CLIENTES_BASE = [...CB, ...SK];
+
+const API = 'https://script.google.com/macros/s/AKfycbwy82Gu7BkIB6k8iHTe_c_gi2Gul0MCyYGPk9j1NtTrnIXLQ-tbd9ygPz2uycY8Xlem/exec';
+const SC={Mecánico:'#D32F2F',Eléctrico:'#F57C00',Automatización:'#388E3C','Control Línea':'#1976D2','Téc. Campo':'#6B3FA0',Repuesto:'#4CAF50'};
+
+// ── STORAGE ──
+const KC='nx_v17_cli', KV='nx_v17_vis', KS='nx_v17_srv', KR='nx_v17_rep';
+function lC(){ try{return JSON.parse(localStorage.getItem(KC)||'[]')}catch{return[]} }
+function sC(d){ try{localStorage.setItem(KC,JSON.stringify(d))}catch(e){} }
+function lV(){ try{return JSON.parse(localStorage.getItem(KV)||'[]')}catch{return[]} }
+function sV(d){ try{localStorage.setItem(KV,JSON.stringify(d))}catch(e){} }
+function lS(){ try{return JSON.parse(localStorage.getItem(KS)||'[]')}catch{return[]} }
+function sS(d){ try{localStorage.setItem(KS,JSON.stringify(d))}catch(e){} }
+function lR(){ try{return JSON.parse(localStorage.getItem(KR)||'[]')}catch{return[]} }
+function sR(d){ try{localStorage.setItem(KR,JSON.stringify(d))}catch(e){} }
+
+// CLIENTES — primero de cache local, luego de Sheets
+let CLIENTES = lC().length ? lC() : [...CB, ...SK];
+
+// ── TICKETS ──
+function nextTicket(prefix, items){
+  const nums = items.map(x=>{
+    const m = (x.ticket||'').match(/\d+/);
+    return m ? parseInt(m[0]) : 0;
+  });
+  const next = (Math.max(0,...nums) + 1).toString().padStart(4,'0');
+  return `${prefix}-${next}`;
+}
+
+// ── API ──
+let ONLINE = false;
+function setStatus(online, msg){
+  ONLINE = online;
+  const el = document.getElementById('sync-status');
+  if(el){ el.textContent=msg; el.style.color=online?'#4CAF50':'#F57C00'; }
+}
+
+async function apiCall(payload){
+  try{
+    const qs = payload ? '?payload='+encodeURIComponent(JSON.stringify(payload)) : '?action=read';
+    const res = await fetch(API+qs, {method:'GET'});
+    return JSON.parse(await res.text());
+  } catch(e){ return {ok:false,error:e.message}; }
+}
+
+async function apiPost(payload){
+  // Intentar POST primero, si falla por CORS usar GET con payload encodado
+  try{
+    const res = await fetch(API, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify(payload)
+    });
+    const txt = await res.text();
+    const data = JSON.parse(txt);
+    if(data.ok) return data;
+    throw new Error('POST falló');
+  } catch(e){
+    // Fallback a GET — funciona siempre incluso desde archivo local
+    try{
+      const qs='?payload='+encodeURIComponent(JSON.stringify(payload));
+      const res = await fetch(API+qs, {method:'GET'});
+      return JSON.parse(await res.text());
+    } catch(e2){
+      return {ok:false, error:e2.message};
+    }
+  }
+}
+
+function limpiarFecha(f){
+  if(!f) return '';
+  if(typeof f==='string'&&f.length===10) return f;
+  if(typeof f==='string'&&f.includes('T')){ const d=new Date(f); if(!isNaN(d)) return d.toISOString().split('T')[0]; }
+  if(f instanceof Date) return f.toISOString().split('T')[0];
+  return String(f||'').substring(0,10);
+}
+function limpiarHora(h){
+  if(!h) return '';
+  if(typeof h==='string'&&/^\d{2}:\d{2}/.test(h)) return h.substring(0,5);
+  // Viene de Sheets como fecha completa tipo 1899-12-30T12:14:44.000Z
+  if(typeof h==='string'&&h.includes('T')){
+    const d=new Date(h);
+    if(!isNaN(d)){
+      const hh=String(d.getUTCHours()).padStart(2,'0');
+      const mm=String(d.getUTCMinutes()).padStart(2,'0');
+      return hh+':'+mm;
+    }
+  }
+  if(h instanceof Date){
+    const hh=String(h.getUTCHours()).padStart(2,'0');
+    const mm=String(h.getUTCMinutes()).padStart(2,'0');
+    return hh+':'+mm;
+  }
+  return String(h||'').substring(0,5);
+}
+
+async function syncFromSheets(){
+  setStatus(false,'⟳ Sincronizando...');
+  const data = await apiCall(null);
+  if(data.ok){
+    if(data.clientes?.length){ CLIENTES=data.clientes; sC(CLIENTES); }
+    if(data.visitas?.length){ sV(data.visitas.map(v=>{
+    v.id = String(v.id);  // normalizar ID
+    v.fecha=limpiarFecha(v.fecha);
+    v.hora=limpiarHora(v.hora);
+    return v;
+  })); }
+    if(data.servicios?.length) sS(data.servicios.map(s=>{s.id=String(s.id);return s;}));
+    if(data.repuestos?.length) sR(data.repuestos.map(r=>{r.id=String(r.id);return r;}));
+    setStatus(true,'● En línea · '+new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}));
+    fillSels(); return true;
+  }
+  setStatus(false,'○ Sin conexión (caché local)'); return false;
+}
+
+async function syncAllToSheets(){
+  setStatus(false,'⟳ Guardando...');
+  const r = await apiPost({action:'save_all',visitas:lV(),servicios:[...lS(),...lR()],clientes:CLIENTES});
+  if(r.ok){ setStatus(true,'● Guardado · '+new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'})); toast('✓ Sincronizado'); }
+  else { setStatus(false,'○ Error'); toast('⚠ Sin conexión — datos en caché local'); }
+}
+
+async function inicializarClientesEnSheets(){
+  setStatus(false,'⟳ Cargando clientes...');
+  const todos=[...CB,...SK]; const LOTE=30; let ok=true;
+  for(let i=0;i<todos.length;i+=LOTE){
+    const lote=todos.slice(i,i+LOTE); const esFirst=i===0;
+    try{
+      const res=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'cargar_clientes_lote',clientes:lote,limpiar:esFirst})});
+      const d=JSON.parse(await res.text()); if(!d?.ok){ok=false;break;}
+    }catch(e){ok=false;break;}
+    setStatus(false,`⟳ ${Math.min(i+LOTE,todos.length)}/${todos.length}`);
+    await new Promise(r=>setTimeout(r,500));
+  }
+  if(ok){ setStatus(true,'● En línea'); toast('✓ '+todos.length+' clientes cargados'); await syncFromSheets(); renderActive(); }
+  else { setStatus(false,'○ Error'); toast('⚠ Error — intentá de nuevo'); }
+}
+
+// ── HELPERS ──
+function cerrar(id){ document.getElementById(id).style.display='none'; }
+function toast(msg,dur=2500){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),dur); }
+function eqTab(i,el){ document.querySelectorAll('.eqt').forEach(t=>t.classList.remove('on')); el.classList.add('on'); document.querySelectorAll('.eqp').forEach(p=>p.classList.remove('on')); document.getElementById('eq-'+i).classList.add('on'); }
+
+function bE(e){ const m={Visitado:'bv',Planificado:'bpl',Pendiente:'bpe',Cancelado:'bpe'}; return `<span class="badge ${m[e]||'bpe'}">${e||'Pendiente'}</span>`; }
+function bU(u){ if(!u) return ''; const m={Alta:'ba',Media:'bm',Normal:'bpe'}; return `<span class="badge ${m[u]||'bpe'}">${u}</span>`; }
+function bSt(s){ if(!s||s==='Sin seguimiento'||s==='Pendiente') return '<span class="badge bpe">Pendiente</span>'; if(s==='En proceso') return '<span class="badge bpr">🔧 En proceso</span>'; if(s==='Programado') return '<span class="badge bpl">📅 Programado</span>'; if(s==='Completado'||s==='Entregado') return `<span class="badge bg2c">✓ ${s}</span>`; if(s==='Cerrado') return '<span class="badge bg2c">✓ Cerrado</span>'; if(s.includes('Presupuesto')) return '<span class="badge bps">📋 Presup.</span>'; return `<span class="badge bpe">${s}</span>`; }
+function bM(m){ if(!m) return '—'; const mp={FOMESA:'bf',SIENZ:'bsi','COMPAC/TOMRA':'bc',SUNKIST:'bsk',REEMOON:'br'}; return `<span class="badge ${mp[m]||'bpe'}">${m}</span>`; }
+
+function fillSels(){
+  const ids=['v-cli','s-cli','r-cli','c-r-ref'];
+  ids.forEach(id=>{
+    const el=document.getElementById(id); if(!el) return;
+    const cur=el.value;
+    el.innerHTML='<option value="">— Seleccionar cliente —</option>';
+    CLIENTES.forEach(c=>{
+      const o=document.createElement('option');
+      o.value=c.n; o.textContent=`${c.sk?'[SK] ':''}#${c.r} — ${c.n}`;
+      el.appendChild(o);
+    });
+    if(cur) el.value=cur;
+  });
+}
+
+function getCli(nombre){ return CLIENTES.find(x=>x.n===nombre)||{}; }
+
+function showCliCard(prefix, nombre){
+  const c=getCli(nombre);
+  const card=document.getElementById(prefix+'-cli-info');
+  if(!card) return;
+  if(!nombre){ card.style.display='none'; return; }
+  card.style.display='block';
+  const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v||'—'; };
+  set(prefix.replace('-','')+'i-reg', c.reg);
+  set(prefix.replace('-','')+'i-fru', c.fru);
+  set(prefix.replace('-','')+'i-nom', c.nom);
+  set(prefix.replace('-','')+'i-tel', c.tel);
+  if(document.getElementById(prefix.replace('-','')+'i-inf')) set(prefix.replace('-','')+'i-inf', c.inf||c.cal ? (c.inf||'')+(c.cal?' / '+c.cal:'') : '—');
+  if(document.getElementById(prefix.replace('-','')+'i-cal')) set(prefix.replace('-','')+'i-cal', c.eq_cal||'—');
+  if(document.getElementById(prefix.replace('-','')+'i-pal')) set(prefix.replace('-','')+'i-pal', c.pal||'—');
+}
+
+function autoFillVis(){
+  const n=document.getElementById('v-cli').value;
+  showCliCard('v', n);
+  const c=getCli(n); if(!c.n) return;
+  // Pre-llenar con último dato de visita si existe
+  const vs=lV().filter(x=>x.cli===n).sort((a,b)=>(b.ts||0)-(a.ts||0));
+  const last=vs[0]||{};
+  document.getElementById('v-cont').value=last.cont||c.nom||'';
+  document.getElementById('v-tel').value=last.tel||c.tel||'';
+  document.getElementById('v-cargo').value=last.cargo||c.cargo||'';
+  document.getElementById('v-inf-ob').value=last.infOb||'';
+  document.getElementById('v-cal-ob').value=last.calOb||'';
+  document.getElementById('v-pal-ob').value=last.palOb||'';
+  document.getElementById('v-com').value=last.com||'';
+}
+
+function autoFillSrv(prefix){
+  const selId=prefix+'-cli';
+  const n=document.getElementById(selId)?.value;
+  showCliCard(prefix, n);
+}
+
+// ── NAV ──
+function goTo(s){
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.sec').forEach(x=>x.classList.remove('active'));
+  const ni=[...document.querySelectorAll('.ni')].find(n=>n.getAttribute('onclick')?.includes("'"+s+"'"));
+  if(ni) ni.classList.add('active');
+  document.getElementById('sec-'+s)?.classList.add('active');
+  if(s==='dashboard') renderDash();
+  if(s==='clientes') renderCli();
+  if(s==='visitas') renderVis();
+  if(s==='servicios') renderSrv();
+  if(s==='repuestos') renderRep();
+  if(s==='gantt') renderGantt();
+  if(s==='agenda'){ initAg(); renderAg(); }
+}
+
+function renderActive(){
+  const act=document.querySelector('.sec.active')?.id?.replace('sec-','');
+  if(act) goTo(act); else goTo('dashboard');
+}
+
+function updateBadge(){
+  const vs=lV(); const ep={};
+  vs.forEach(v=>{ if(!ep[v.cli]||v.ts>ep[v.cli].ts) ep[v.cli]=v; });
+  const n=Object.values(ep).filter(v=>v.urgencia==='Alta').length;
+  const b=document.getElementById('badge-urg');
+  b.textContent=n||''; b.style.display=n?'':'none';
+}
+
+// ── CLIENTES ──
+function abrirCliente(nombre){
+  fillSels();
+  // Reset
+  ['c-n','c-nom','c-tel','c-email','c-inf-o','c-inf-e','c-cal-mod','c-cal-cal','c-cal-o','c-cal-e','c-pal-o','c-pal-e'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['c-reg','c-fru','c-cargo','c-inf-m','c-cal-m','c-pal-m'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('c-r').value='';
+  document.getElementById('mc-title').textContent='Datos del Cliente';
+
+  if(nombre){
+    const c=getCli(nombre); if(!c.n) return;
+    document.getElementById('mc-title').textContent='Editar: '+nombre.substring(0,30);
+    document.getElementById('c-r').value=c.r||'';
+    document.getElementById('c-n').value=c.n||'';
+    document.getElementById('c-reg').value=c.reg||'';
+    document.getElementById('c-fru').value=c.fru||'';
+    document.getElementById('c-nom').value=c.nom||'';
+    document.getElementById('c-cargo').value=c.cargo||'';
+    document.getElementById('c-tel').value=c.tel||'';
+    document.getElementById('c-email').value=c.email||'';
+    document.getElementById('c-inf-m').value=c.inf||'';
+    document.getElementById('c-inf-o').value=c.infO||'';
+    document.getElementById('c-inf-e').value=c.eq_inf||'';
+    document.getElementById('c-cal-m').value=c.cal||'';
+    document.getElementById('c-cal-mod').value=c.eq_cal||'';
+    document.getElementById('c-cal-cal').value=c.calCal||'';
+    document.getElementById('c-cal-o').value=c.calO||'';
+    document.getElementById('c-cal-e').value=c.calE||'';
+    document.getElementById('c-pal-m').value=c.pal||'';
+    document.getElementById('c-pal-o').value=c.palO||'';
+    document.getElementById('c-pal-e').value=c.eq_pal||'';
+  }
+  document.getElementById('m-cliente').style.display='flex';
+}
+
+function guardarCliente(){
+  const n=document.getElementById('c-n').value.trim();
+  if(!n){ toast('⚠ Ingresá el nombre del cliente'); return; }
+  const idx=CLIENTES.findIndex(x=>x.n===n);
+  const c={
+    r: document.getElementById('c-r').value||Date.now().toString(),
+    n, reg:document.getElementById('c-reg').value, fru:document.getElementById('c-fru').value,
+    nom:document.getElementById('c-nom').value.trim(), cargo:document.getElementById('c-cargo').value,
+    tel:document.getElementById('c-tel').value.trim(), email:document.getElementById('c-email').value.trim(),
+    inf:document.getElementById('c-inf-m').value, infO:document.getElementById('c-inf-o').value.trim(),
+    eq_inf:document.getElementById('c-inf-e').value.trim(),
+    cal:document.getElementById('c-cal-m').value, eq_cal:document.getElementById('c-cal-mod').value.trim(),
+    calCal:document.getElementById('c-cal-cal').value, calO:document.getElementById('c-cal-o').value.trim(),
+    calE:document.getElementById('c-cal-e').value.trim(),
+    pal:document.getElementById('c-pal-m').value, palO:document.getElementById('c-pal-o').value.trim(),
+    eq_pal:document.getElementById('c-pal-e').value.trim(),
+  };
+  if(idx>=0) CLIENTES[idx]=c; else CLIENTES.push(c);
+  sC(CLIENTES);
+  apiPost({action:'save_cliente',data:c});
+  cerrar('m-cliente'); toast('✓ Cliente guardado'); fillSels(); renderCli();
+}
+
+function renderCli(){
+  const q=(document.getElementById('f-q')?.value||'').toLowerCase();
+  const fR=document.getElementById('f-reg')?.value||'';
+  const fF=document.getElementById('f-fru')?.value||'';
+  const fC=document.getElementById('f-cal')?.value||'';
+  const filtered=CLIENTES.filter(c=>{
+    const mQ=!q||(c.n.toLowerCase().includes(q)||(c.reg||'').toLowerCase().includes(q)||(c.nom||'').toLowerCase().includes(q));
+    return mQ&&(!fR||c.reg===fR)&&(!fF||(c.fru||'').includes(fF))&&(!fC||c.cal===fC||c.inf===fC||c.pal===fC);
+  });
+  document.getElementById('cli-cnt').textContent=`(${filtered.length} de ${CLIENTES.length})`;
+  document.getElementById('tb-cli').innerHTML=filtered.map(c=>`
+    <tr onclick="abrirCliente('${c.n.replace(/'/g,"\'")}');" style="cursor:pointer">
+      <td style="font-family:'DM Mono';font-size:11px;color:var(--text3)">${c.sk?'<span class="badge bsk2">SK</span>':'#'+c.r}</td>
+      <td class="tn">${c.n}<small>${c.nom||''}${c.cargo?' · '+c.cargo:''}</small></td>
+      <td style="font-size:11px">${c.reg||'—'}</td>
+      <td style="font-size:11px">${c.fru||'—'}</td>
+      <td>${bM(c.inf)}</td>
+      <td>${bM(c.cal)}<small style="display:block;font-size:10px;color:var(--text3)">${(c.eq_cal||'').substring(0,25)}</small></td>
+      <td>${bM(c.pal)}</td>
+      <td style="font-size:11px">${c.nom||'—'}</td>
+      <td style="font-size:11px;font-family:'DM Mono'">${c.tel||'—'}</td>
+      <td><button class="btn bg bs" onclick="event.stopPropagation();abrirCliente('${c.n.replace(/'/g,"\'")}')">✎ Editar</button></td>
+    </tr>`).join('')||'<tr><td colspan="10"><div class="empty">Sin resultados</div></td></tr>';
+}
+
+// ── VISITAS ──
+function abrirVisitaId(visId){
+  // Abrir una visita específica por ID
+  const v=lV().find(x=>String(x.id)===String(visId));
+  if(!v) return;
+  fillSels();
+  document.getElementById('v-cli').value=v.cli;
+  autoFillVis();
+  document.getElementById('mv-title').textContent='Editar visita: '+v.cli.substring(0,25);
+  document.getElementById('v-id').value=v.id;
+  document.getElementById('v-fecha').value=v.fecha||'';
+  document.getElementById('v-hora').value=limpiarHora(v.hora)||'';
+  document.getElementById('v-est').value=v.estado||'Planificado';
+  document.getElementById('v-urg').value=v.urgencia||'';
+  document.getElementById('v-cont').value=v.cont||'';
+  document.getElementById('v-tel').value=v.tel||'';
+  document.getElementById('v-cargo').value=v.cargo||'';
+  document.getElementById('v-inf-ob').value=v.infOb||'';
+  document.getElementById('v-cal-ob').value=v.calOb||'';
+  document.getElementById('v-pal-ob').value=v.palOb||'';
+  document.getElementById('v-com').value=v.com||'';
+  document.getElementById('m-visita').style.display='flex';
+}
+
+async function eliminarVisita(visId){
+  if(!confirm('¿Eliminar esta visita?')) return;
+  const vs=lV().filter(x=>String(x.id)!==String(visId));
+  sV(vs);
+  setStatus(false,'⟳ Eliminando...');
+  const r = await apiPost({action:'save_all', visitas:vs, servicios:lS(), repuestos:lR(), clientes:CLIENTES});
+  if(r.ok){ setStatus(true,'● Guardado'); toast('✓ Visita eliminada'); }
+  else { setStatus(false,'○ Error'); toast('⚠ Eliminado local — presioná ☁ Sincronizar para confirmar en Sheets'); }
+  renderVis();
+}
+
+function abrirVisita(nombre){
+  fillSels();
+  ['v-id','v-fecha','v-cont','v-tel','v-inf-ob','v-cal-ob','v-pal-ob','v-com'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['v-cli','v-hora','v-cargo','v-urg'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('v-est').value='Planificado';
+  document.getElementById('v-cli-info').style.display='none';
+  const tdNew=document.getElementById('v-ticket-display'); if(tdNew) tdNew.textContent='nuevo';
+  document.querySelectorAll('.eqt').forEach((t,i)=>t.classList.toggle('on',i===0));
+  document.querySelectorAll('.eqp').forEach((p,i)=>p.classList.toggle('on',i===0));
+  document.getElementById('mv-title').textContent='Nueva visita';
+  if(nombre){
+    document.getElementById('v-cli').value=nombre;
+    autoFillVis();
+    document.getElementById('mv-title').textContent='Visita: '+nombre.substring(0,30);
+    // Cargar última visita
+    const vsAll=lV().filter(x=>x.cli===nombre).sort((a,b)=>(b.ts||0)-(a.ts||0));
+    if(vsAll[0]){
+      const v=vsAll[0];
+      document.getElementById('v-id').value=v.id;  // MANTENER ID
+  const td=document.getElementById('v-ticket-display'); if(td) td.textContent=v.ticket||'nuevo';
+      document.getElementById('v-fecha').value=v.fecha||'';
+      document.getElementById('v-hora').value=limpiarHora(v.hora)||'';
+      document.getElementById('v-est').value=v.estado||'Planificado';
+      document.getElementById('v-urg').value=v.urgencia||'';
+      const tdLoad=document.getElementById('v-ticket-display'); if(tdLoad) tdLoad.textContent=v.ticket||v.id;
+      document.getElementById('v-cont').value=v.cont||'';
+      document.getElementById('v-tel').value=v.tel||'';
+      document.getElementById('v-cargo').value=v.cargo||'';
+      document.getElementById('v-inf-ob').value=v.infOb||'';
+      document.getElementById('v-cal-ob').value=v.calOb||'';
+      document.getElementById('v-pal-ob').value=v.palOb||'';
+      document.getElementById('v-com').value=v.com||'';
+    }
+  }
+  document.getElementById('m-visita').style.display='flex';
+}
+
+function guardarVisita(){
+  const cli=document.getElementById('v-cli').value;
+  if(!cli){ toast('⚠ Seleccioná un cliente'); return; }
+  const vsAll2=lV();
+  const existeId=String(document.getElementById('v-id').value||'');
+  const visExistente=existeId ? vsAll2.find(x=>String(x.id)===existeId) : null;
+  const ticketExistente=visExistente?.ticket||'';
+  const v={
+    id:existeId||String(Date.now()),
+    ticket:ticketExistente||nextTicket('VIS',vsAll2),
+    cli, fecha:document.getElementById('v-fecha').value,
+    hora:document.getElementById('v-hora').value, estado:document.getElementById('v-est').value,
+    urgencia:document.getElementById('v-urg').value,
+    cont:document.getElementById('v-cont').value.trim(),
+    tel:document.getElementById('v-tel').value.trim(),
+    cargo:document.getElementById('v-cargo').value,
+    infOb:document.getElementById('v-inf-ob').value.trim(),
+    calOb:document.getElementById('v-cal-ob').value.trim(),
+    palOb:document.getElementById('v-pal-ob').value.trim(),
+    com:document.getElementById('v-com').value.trim(),
+    ts:Date.now(),
+  };
+  const vs=lV();
+  // Buscar por ID (string comparison para evitar problemas de tipo)
+  const idx=vs.findIndex(x=>String(x.id)===String(v.id));
+  if(idx>=0){ vs[idx]=v; } else { vs.unshift(v); }
+  sV(vs);
+  apiPost({action:'save_visita',data:v});
+  cerrar('m-visita'); toast('✓ Visita '+v.ticket+' guardada'); updateBadge(); renderVis();
+}
+
+function renderVis(){
+  const vs=lV();
+  const q=(document.getElementById('fv-q')?.value||'').toLowerCase();
+  const fE=document.getElementById('fv-est')?.value||'';
+  const fU=document.getElementById('fv-urg')?.value||'';
+  const filtered=vs.filter(v=>{
+    const mQ=!q||(v.cli||'').toLowerCase().includes(q);
+    return mQ&&(!fE||v.estado===fE)&&(!fU||v.urgencia===fU);
+  }).sort((a,b)=>(b.ts||0)-(a.ts||0));
+  document.getElementById('vis-cnt').textContent=`(${filtered.length})`;
+  const rc=v=>{ if(v.urgencia==='Alta') return 'ra'; if(v.estado==='Visitado') return 'rv'; if(v.estado==='Planificado') return 'rp'; return ''; };
+  document.getElementById('tb-vis').innerHTML=filtered.map(v=>{
+    const c=getCli(v.cli);
+    return `<tr class="${rc(v)}" onclick="abrirVisitaId('${v.id}')" style="cursor:pointer">
+      <td><span class="ticket-badge" style="background:#F0F4F8;color:#1B2A4A">${v.ticket||'—'}</span></td>
+      <td style="font-family:'DM Mono';font-size:11px;white-space:nowrap">${v.fecha||'—'}</td>
+      <td style="font-family:'DM Mono';font-size:11px">${v.hora||'—'}</td>
+      <td class="tn">${v.cli}<small>${c.reg||''}</small></td>
+      <td style="font-size:11px">${c.reg||'—'}</td>
+      <td style="font-size:11px">${v.cont||c.nom||'—'}</td>
+      <td style="font-size:11px;font-family:'DM Mono'">${v.tel||c.tel||'—'}</td>
+      <td>${bE(v.estado)}</td>
+      <td>${bU(v.urgencia)}</td>
+      <td class="tm">${v.infOb||'—'}</td>
+      <td class="tm">${v.calOb||'—'}</td>
+      <td class="tm">${v.palOb||'—'}</td>
+      <td style="white-space:nowrap">
+        <button class="btn bg bs" onclick="event.stopPropagation();abrirVisitaId('${v.id}')">✎</button>
+        <button class="btn bd bs" onclick="event.stopPropagation();eliminarVisita('${v.id}')">🗑</button>
+      </td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="12"><div class="empty">Sin visitas registradas.<br>Hacé clic en "+ Nueva visita" para empezar.</div></td></tr>';
+}
+
+// ── SERVICIOS ──
+function abrirServicio(id){
+  fillSels();
+  const ss=lS();
+  document.getElementById('ms-title').textContent='Nuevo Servicio Técnico';
+  ['s-desc','s-com','s-resp','s-ini','s-fin'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});
+  ['s-cli','s-sec'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});
+  document.getElementById('s-tipo').value='Mecánico';
+  document.getElementById('s-est').value='Pendiente';
+  document.getElementById('s-cli-info').style.display='none';
+
+  if(id){
+    const s=ss.find(x=>x.id===id)||{};
+    document.getElementById('ms-title').textContent='Editar Servicio '+s.ticket;
+    document.getElementById('s-id').value=s.id||'';
+    document.getElementById('s-ticket').value=s.ticket||'';
+    document.getElementById('s-cli').value=s.cli||''; autoFillSrv('s');
+    document.getElementById('s-tipo').value=s.tipo||'Mecánico';
+    document.getElementById('s-sec').value=s.sec||'';
+    document.getElementById('s-ini').value=s.inicio||'';
+    document.getElementById('s-fin').value=s.fin||'';
+    document.getElementById('s-resp').value=s.responsable||'';
+    document.getElementById('s-est').value=s.estado||'Pendiente';
+    document.getElementById('s-desc').value=s.desc||'';
+    document.getElementById('s-com').value=s.com||'';
+  } else {
+    document.getElementById('s-id').value='';
+    document.getElementById('s-ticket').value=nextTicket('SRV',ss);
+  }
+  document.getElementById('m-servicio').style.display='flex';
+}
+
+function guardarServicio(){
+  const cli=document.getElementById('s-cli').value;
+  if(!cli){ toast('⚠ Seleccioná un cliente'); return; }
+  const ss=lS();
+  const s={
+    id:document.getElementById('s-id').value||Date.now().toString(),
+    ticket:document.getElementById('s-ticket').value,
+    cli, tipo:document.getElementById('s-tipo').value,
+    sec:document.getElementById('s-sec').value,
+    inicio:document.getElementById('s-ini').value,
+    fin:document.getElementById('s-fin').value,
+    responsable:document.getElementById('s-resp').value.trim(),
+    estado:document.getElementById('s-est').value,
+    desc:document.getElementById('s-desc').value.trim(),
+    com:document.getElementById('s-com').value.trim(),
+    ts:Date.now(),
+  };
+  const idx=ss.findIndex(x=>x.id===s.id);
+  if(idx>=0) ss[idx]=s; else ss.unshift(s);
+  sS(ss);
+  apiPost({action:'save_servicio',data:Object.assign({},s,{tipo:s.tipo})});
+  cerrar('m-servicio'); toast('✓ Servicio '+s.ticket+' guardado'); renderSrv(); renderGantt();
+}
+
+function renderSrv(){
+  const ss=lS();
+  const fE=document.getElementById('fs-est')?.value||'';
+  const fT=document.getElementById('fs-tipo')?.value||'';
+  const filtered=ss.filter(s=>(!fE||s.estado===fE)&&(!fT||s.tipo===fT));
+  // Stats
+  const tipos={Mecánico:0,Eléctrico:0,Automatización:0,'Control Línea':0,'Téc. Campo':0};
+  ss.forEach(s=>{ if(tipos[s.tipo]!==undefined) tipos[s.tipo]++; });
+  document.getElementById('sv-stats').innerHTML=Object.entries(tipos).map(([t,n])=>`
+    <div class="sc" style="border-top-color:${SC[t]||'var(--border)'}">
+      <div class="sn" style="color:${SC[t]||'var(--text)'};font-size:24px">${n}</div>
+      <div class="sl">${t}</div>
+    </div>`).join('');
+  document.getElementById('tb-srv').innerHTML=filtered.length
+    ?filtered.map(s=>`<tr class="${s.estado==='En proceso'?'rpr':s.estado==='Completado'?'rv':''}">
+      <td><span class="ticket-badge ticket-srv">${s.ticket||'—'}</span></td>
+      <td class="tn">${s.cli}<small>${getCli(s.cli).reg||''}</small></td>
+      <td><span style="color:${SC[s.tipo]||'var(--text)'};font-weight:700;font-size:11px">${s.tipo}</span></td>
+      <td class="tm">${s.desc||'—'}</td>
+      <td style="font-size:11px">${s.sec||'—'}</td>
+      <td style="font-family:'DM Mono';font-size:11px;white-space:nowrap">${s.inicio||'—'}</td>
+      <td style="font-family:'DM Mono';font-size:11px;white-space:nowrap">${s.fin||'—'}</td>
+      <td style="font-size:11px">${s.responsable||'—'}</td>
+      <td>${bSt(s.estado)}</td>
+      <td style="white-space:nowrap">
+        <button class="btn bg bs" onclick="abrirServicio('${s.id}')">✎</button>
+        <button class="btn bd bs" onclick="elimSrv('${s.id}')">✕</button>
+      </td>
+    </tr>`).join('')
+    :'<tr><td colspan="10"><div class="empty">Sin servicios.<br>Usá "+ Nuevo servicio" para crear un ticket.</div></td></tr>';
+}
+
+async function elimSrv(id){
+  if(!confirm('¿Eliminar este servicio?')) return;
+  const nuevos = lS().filter(x=>String(x.id)!==String(id));
+  sS(nuevos);
+  setStatus(false,'⟳ Eliminando...');
+  const r = await apiPost({action:'save_all', visitas:lV(), servicios:nuevos, repuestos:lR(), clientes:CLIENTES});
+  if(r.ok){ setStatus(true,'● Guardado'); toast('✓ Servicio eliminado'); }
+  else { setStatus(false,'○ Error al eliminar en Sheets'); toast('⚠ Eliminado local pero no en Sheets — sincronizá manualmente'); }
+  renderSrv(); renderGantt();
+}
+
+// ── REPUESTOS ──
+function abrirRepuesto(id){
+  fillSels();
+  const rr=lR();
+  document.getElementById('mr-title').textContent='Nuevo Repuesto';
+  ['r-desc','r-resp','r-fecha','r-com'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});
+  ['r-cli','r-sec'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});
+  document.getElementById('r-est').value='Pendiente';
+  document.getElementById('r-cli-info').style.display='none';
+  if(id){
+    const r=rr.find(x=>x.id===id)||{};
+    document.getElementById('mr-title').textContent='Editar Repuesto '+r.ticket;
+    document.getElementById('r-id').value=r.id||'';
+    document.getElementById('r-ticket').value=r.ticket||'';
+    document.getElementById('r-cli').value=r.cli||''; autoFillSrv('r');
+    document.getElementById('r-desc').value=r.desc||'';
+    document.getElementById('r-sec').value=r.sec||'';
+    document.getElementById('r-fecha').value=r.fecha||'';
+    document.getElementById('r-resp').value=r.responsable||'';
+    document.getElementById('r-est').value=r.estado||'Pendiente';
+    document.getElementById('r-com').value=r.com||'';
+  } else {
+    document.getElementById('r-id').value='';
+    document.getElementById('r-ticket').value=nextTicket('REP',rr);
+  }
+  document.getElementById('m-repuesto').style.display='flex';
+}
+
+function guardarRepuesto(){
+  const cli=document.getElementById('r-cli').value;
+  if(!cli){ toast('⚠ Seleccioná un cliente'); return; }
+  const rr=lR();
+  const r={
+    id:document.getElementById('r-id').value||Date.now().toString(),
+    ticket:document.getElementById('r-ticket').value,
+    cli, tipo:'Repuesto',
+    desc:document.getElementById('r-desc').value.trim(),
+    sec:document.getElementById('r-sec').value,
+    fecha:document.getElementById('r-fecha').value,
+    inicio:document.getElementById('r-fecha').value,
+    fin:document.getElementById('r-fecha').value,
+    responsable:document.getElementById('r-resp').value.trim(),
+    estado:document.getElementById('r-est').value,
+    com:document.getElementById('r-com').value.trim(),
+    ts:Date.now(),
+  };
+  const idx=rr.findIndex(x=>x.id===r.id);
+  if(idx>=0) rr[idx]=r; else rr.unshift(r);
+  sR(rr);
+  apiPost({action:'save_repuesto',data:r});
+  cerrar('m-repuesto'); toast('✓ Repuesto '+r.ticket+' guardado'); renderRep(); renderGantt();
+}
+
+function renderRep(){
+  const rr=lR();
+  const fE=document.getElementById('fr-est')?.value||'';
+  const filtered=rr.filter(r=>!fE||r.estado===fE);
+  const hoy=new Date().toISOString().split('T')[0];
+  const prox7=new Date(Date.now()+7*86400000).toISOString().split('T')[0];
+  // Stats
+  const tot=rr.length, pend=rr.filter(r=>r.estado==='Pendiente').length;
+  const enProc=rr.filter(r=>r.estado==='En proceso').length;
+  const venc=rr.filter(r=>r.fecha&&r.fecha<hoy&&r.estado!=='Entregado'&&r.estado!=='Cerrado').length;
+  document.getElementById('rp-stats').innerHTML=`
+    <div class="sc" style="border-top-color:var(--green)"><div class="sn" style="color:var(--green2);font-size:26px">${tot}</div><div class="sl">Total</div></div>
+    <div class="sc" style="border-top-color:var(--text3)"><div class="sn" style="color:var(--text2);font-size:26px">${pend}</div><div class="sl">Pendientes</div></div>
+    <div class="sc" style="border-top-color:var(--purple)"><div class="sn" style="color:var(--purple);font-size:26px">${enProc}</div><div class="sl">En proceso</div></div>
+    <div class="sc" style="border-top-color:var(--red)"><div class="sn" style="color:var(--red);font-size:26px">${venc}</div><div class="sl">Vencidos</div></div>`;
+  document.getElementById('tb-rep').innerHTML=filtered.length
+    ?filtered.sort((a,b)=>(a.fecha||'9999').localeCompare(b.fecha||'9999')).map(r=>{
+      const vencido=r.fecha&&r.fecha<hoy;
+      const pronto=r.fecha&&r.fecha>=hoy&&r.fecha<=prox7;
+      const fStyle=vencido?'color:var(--red);font-weight:700':pronto?'color:var(--amber);font-weight:700':'';
+      return `<tr class="${vencido?'ra':r.estado==='En proceso'?'rpr':''}">
+        <td><span class="ticket-badge ticket-rep">${r.ticket||'—'}</span></td>
+        <td class="tn">${r.cli}<small>${getCli(r.cli).reg||''}</small></td>
+        <td style="font-size:12px;max-width:220px">${r.desc||'—'}</td>
+        <td style="font-size:11px">${r.sec||'—'}</td>
+        <td style="font-family:'DM Mono';font-size:11px;white-space:nowrap;${fStyle}">${r.fecha||'—'}${vencido?' ⚠':pronto?' ⏰':''}</td>
+        <td style="font-size:11px">${r.responsable||'—'}</td>
+        <td>${bSt(r.estado)}</td>
+        <td style="font-size:11px;max-width:160px;color:var(--text2)">${r.com||'—'}</td>
+        <td style="white-space:nowrap">
+          <button class="btn bg bs" onclick="abrirRepuesto('${r.id}')">✎</button>
+          <button class="btn bd bs" onclick="elimRep('${r.id}')">✕</button>
+        </td>
+      </tr>`;
+    }).join('')
+    :'<tr><td colspan="9"><div class="empty">Sin repuestos.<br>Usá "+ Nuevo repuesto" para crear un ticket.</div></td></tr>';
+}
+
+function elimRep(id){
+  if(!confirm('¿Eliminar este repuesto?')) return;
+  const nuevos = lR().filter(x=>String(x.id)!==String(id));
+  sR(nuevos);
+  apiPost({action:'save_all', visitas:lV(), servicios:lS(), repuestos:nuevos, clientes:CLIENTES});
+  renderRep(); renderGantt(); toast('✓ Repuesto eliminado');
+}
+
+// ── GANTT ──
+function renderGantt(){
+  const items=[
+    ...lS().filter(s=>s.inicio||s.fin).map(s=>{
+      const c=getCli(s.cli); return {cli:s.cli,reg:c.reg||'',tipo:s.tipo,desc:s.desc||'',resp:s.responsable||'',ticket:s.ticket||'',inicio:s.inicio||s.fin,fin:s.fin||s.inicio};
+    }),
+    ...lR().filter(r=>r.fecha).map(r=>{
+      const c=getCli(r.cli); return {cli:r.cli,reg:c.reg||'',tipo:'Repuesto',desc:r.desc||'',resp:r.responsable||'',ticket:r.ticket||'',inicio:r.fecha,fin:r.fecha};
+    }),
+  ];
+  const el=document.getElementById('gantt-c');
+  if(!items.length){el.innerHTML='<div class="empty" style="padding:40px">El Gantt se genera automáticamente desde los tickets de Servicios y Repuestos que tienen fecha.<br>Creá tickets con fecha inicio y fin para verlos acá.</div>';return;}
+  const fechas=items.flatMap(i=>[i.inicio,i.fin]).sort();
+  let ri=new Date(fechas[0]),rf=new Date(fechas[fechas.length-1]);
+  ri.setDate(ri.getDate()-7); rf.setDate(rf.getDate()+14);
+  const sems=[]; let cur=new Date(ri);
+  const dow=cur.getDay(); cur.setDate(cur.getDate()-(dow===0?6:dow-1));
+  while(cur<=rf){sems.push(new Date(cur));cur.setDate(cur.getDate()+7);}
+  const hoy=new Date();
+  const inR=(s,ini,fin)=>{const si=new Date(s.inicio),sf=new Date(s.fin);return sf>=ini&&si<=fin;};
+  const hdr=sems.map(l=>{const isH=l<=hoy&&new Date(l.getTime()+7*86400000)>hoy;const f=new Date(l);f.setDate(l.getDate()+6);return`<th class="${isH?'hoy':''}">S${String(l.getMonth()+1).padStart(2,'0')}<br>${l.getDate()}/${f.getDate()}</th>`;}).join('');
+  const rows=items.map(item=>{
+    const cells=sems.map(l=>{const fl=new Date(l);fl.setDate(l.getDate()+6);if(inR(item,l,fl)){const bg=SC[item.tipo]||'#4CAF50';return`<td style="background:${bg}22;border-color:${bg}44"><div class="gbar" style="background:${bg};opacity:.85"></div></td>`;}return'<td></td>';}).join('');
+    return`<tr><td class="glbl">${item.cli}<small>${item.ticket} · ${item.resp}</small></td><td class="gtipo"><span style="color:${SC[item.tipo]||'var(--green)'};font-weight:700;font-size:10px">${item.tipo}</span></td>${cells}</tr>`;
+  }).join('');
+  el.innerHTML=`<table class="gtbl"><thead><tr><th style="min-width:160px;text-align:left;padding:5px 10px">Cliente / Ticket</th><th style="min-width:80px;text-align:left;padding:5px 8px">Tipo</th>${hdr}</tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+// ── AGENDA ──
+function initAg(){ const i=document.getElementById('ag-fecha'); if(!i.value) i.value=new Date().toISOString().split('T')[0]; }
+function getWeek(d){ const dt=new Date(d),day=dt.getDay(),diff=dt.getDate()-(day===0?6:day-1);const lun=new Date(dt.setDate(diff));return Array.from({length:7},(_,i)=>{const dd=new Date(lun);dd.setDate(lun.getDate()+i);return dd;}); }
+function renderAg(){
+  const ds=document.getElementById('ag-fecha')?.value||new Date().toISOString().split('T')[0];
+  const dias=getWeek(ds); const vs=lV();
+  const hoy=new Date().toISOString().split('T')[0];
+  const dn=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+  document.getElementById('ag-grid').innerHTML=dias.map((d,i)=>{
+    const dS=d.toISOString().split('T')[0];
+    const dV=vs.filter(v=>v.fecha===dS).sort((a,b)=>(a.hora||'').localeCompare(b.hora||''));
+    return`<div class="agd" style="${dS===hoy?'border:2px solid var(--green)':''}">
+      <div class="agdh ${dS===hoy?'hoy':''}">${dn[i]} ${d.getDate()}/${d.getMonth()+1}${dS===hoy?' ◆':''}</div>
+      <div class="ages">
+        ${dV.map(v=>{const bg=v.estado==='Visitado'?'#E8F5E9,#2E7D32':v.estado==='Planificado'?'#EBF4FF,#1565C0':'#F5F7FA,#4A6080';const [bg2,tc]=bg.split(',');
+          return`<div class="agev" style="background:${bg2};color:${tc}" onclick="abrirVisita('${v.cli.replace(/'/g,"\'")}')">
+            <div class="evt">${v.hora||'—'}</div>
+            <div class="evn">${v.cli}</div>
+          </div>`;
+        }).join('')}
+        ${!dV.length?`<div style="font-size:10px;color:var(--text3);padding:6px;text-align:center">libre</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  const all=[...vs].sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||''));
+  document.getElementById('tb-ag').innerHTML=all.length
+    ?all.map(v=>{const c=getCli(v.cli);return`<tr>
+      <td style="font-family:'DM Mono';font-size:11px;white-space:nowrap">${v.fecha||'—'}</td>
+      <td style="font-family:'DM Mono';font-size:11px">${v.hora||'—'}</td>
+      <td class="tn">${v.cli}<small>${c.reg||''}</small></td>
+      <td style="font-size:11px">${c.reg||'—'}</td>
+      <td style="font-size:11px">${v.cont||c.nom||'—'}</td>
+      <td style="font-size:11px;font-family:'DM Mono'">${v.tel||c.tel||'—'}</td>
+      <td>${bE(v.estado)}</td><td>${bU(v.urgencia)}</td>
+      <td><button class="btn bg bs" onclick="abrirVisita('${v.cli.replace(/'/g,"\'")}')">Ver</button></td>
+    </tr>`;
+  }).join('')
+  :'<tr><td colspan="9"><div class="empty">Sin visitas registradas</div></td></tr>';
+}
+
+// ── DASHBOARD ──
+function renderDash(){
+  const vs=lV(), ss=lS(), rr=lR();
+  const ep={}; vs.forEach(v=>{if(!ep[v.cli]||v.ts>ep[v.cli].ts) ep[v.cli]=v;});
+  const vals=Object.values(ep);
+  const nV=vals.filter(v=>v.estado==='Visitado').length;
+  const nP=vals.filter(v=>v.estado==='Planificado').length;
+  const nPe=CLIENTES.length-nV-nP;
+  const nA=vals.filter(v=>v.urgencia==='Alta').length;
+  const nEP=ss.filter(s=>s.estado==='En proceso').length;
+  document.getElementById('d-stats').innerHTML=`
+    <div class="sc" style="border-top-color:var(--green2)"><div class="sn" style="color:var(--green2)">${nV}</div><div class="sl">Visitados</div><div class="ss">de ${CLIENTES.length}</div></div>
+    <div class="sc" style="border-top-color:var(--blue)"><div class="sn" style="color:var(--blue)">${nP}</div><div class="sl">Planificados</div></div>
+    <div class="sc" style="border-top-color:var(--amber)"><div class="sn" style="color:var(--amber)">${nPe}</div><div class="sl">Pendientes</div></div>
+    <div class="sc" style="border-top-color:var(--red)"><div class="sn" style="color:var(--red)">${nA}</div><div class="sl">Urgencia alta</div></div>
+    <div class="sc" style="border-top-color:var(--purple)"><div class="sn" style="color:var(--purple)">${nEP}</div><div class="sl">Serv. activos</div></div>`;
+  const pct=n=>Math.round((n/Math.max(CLIENTES.length,1))*100);
+  document.getElementById('d-vis').innerHTML=`<div style="display:flex;flex-direction:column;gap:10px">
+    ${[['Visitados',nV,'var(--green2)'],['Planificados',nP,'var(--blue)'],['Pendientes',nPe,'var(--text3)']].map(([l,n,c])=>`
+      <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span>${l}</span><span style="font-family:'DM Mono';color:${c}">${n} (${pct(n)}%)</span></div>
+      <div class="pb"><div class="pf" style="width:${pct(n)}%;background:${c}"></div></div></div>`).join('')}
+    <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:11px;color:var(--text3)">Últimas visitas</div>
+    ${vs.slice(0,4).map(v=>'<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px"><div style="flex:1;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+v.cli+'</div><span style="font-size:10px;color:var(--text3)">'+( v.fecha||'-')+'</span>'+bE(v.estado)+'</div>').join('')||'<div style="color:var(--text3);font-size:12px;padding:8px 0">Sin visitas aún</div>'}
+  </div>`;
+  const peSt={Pendiente:ss.filter(s=>s.estado==='Pendiente').length,EnProceso:ss.filter(s=>s.estado==='En proceso').length,Completado:ss.filter(s=>s.estado==='Completado').length};
+  document.getElementById('d-srv').innerHTML=`<div style="display:flex;flex-direction:column;gap:8px">
+    <div style="display:flex;gap:10px;margin-bottom:4px">
+      ${[['Servicios',ss.length,'#1976D2'],['Repuestos',rr.length,'#388E3C']].map(([l,n,c])=>`<div style="flex:1;background:var(--bg3);border-radius:6px;border:1px solid var(--border);padding:10px;text-align:center"><div style="font-size:22px;font-weight:800;font-family:'DM Mono';color:${c}">${n}</div><div style="font-size:10px;color:var(--text2);font-weight:700;text-transform:uppercase">${l}</div></div>`).join('')}
+    </div>
+    ${[['Pendiente',peSt.Pendiente,'var(--text3)'],['En proceso',peSt.EnProceso,'var(--purple)'],['Completado',peSt.Completado,'var(--green2)']].map(([l,n,c])=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:7px 10px;background:var(--bg3);border-radius:6px;border:1px solid var(--border)">
+        <div style="width:8px;height:8px;border-radius:50%;background:${c};flex-shrink:0"></div>
+        <div style="flex:1;font-size:12px">${l}</div>
+        <div style="font-family:'DM Mono';font-size:14px;font-weight:700;color:${c}">${n}</div>
+      </div>`).join('')}
+  </div>`;
+  // Urgencias
+  const urg=vals.filter(v=>v.urgencia==='Alta').slice(0,5);
+  document.getElementById('d-urg').innerHTML=urg.length?urg.map(v=>`<div class="mi"><span class="mn">${v.cli}</span><span class="badge ba">Alta</span></div>`).join(''):'<div class="empty" style="padding:16px;font-size:11px">Sin urgencias altas</div>';
+  // Próximas
+  const hoy=new Date().toISOString().split('T')[0];
+  const prox=vs.filter(v=>v.estado==='Planificado'&&v.fecha>=hoy).sort((a,b)=>a.fecha.localeCompare(b.fecha)).slice(0,5);
+  document.getElementById('d-prox').innerHTML=prox.length?prox.map(v=>`<div class="mi"><span class="mn">${v.cli}</span><span style="font-family:'DM Mono';font-size:10px;background:var(--blue-bg);color:var(--blue);padding:2px 7px;border-radius:20px">${v.fecha}</span></div>`).join(''):'<div class="empty" style="padding:16px;font-size:11px">Sin planificadas</div>';
+  // Regiones
+  const rc={};
+  vals.filter(v=>v.estado==='Visitado').forEach(v=>{const c=getCli(v.cli);if(c.reg)rc[c.reg]=(rc[c.reg]||0)+1;});
+  const sr=Object.entries(rc).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  document.getElementById('d-reg').innerHTML=sr.length?sr.map(([r,n])=>`<div class="mi"><span class="mn">${r}</span><span style="background:var(--bg4);color:var(--text2);font-size:10px;padding:2px 7px;border-radius:20px">${n}</span></div>`).join(''):'<div class="empty" style="padding:16px;font-size:11px">Registrá visitas</div>';
+  updateBadge();
+}
+
+// ── EXPORT ──
+function exportarExcel(){
+  const wb=XLSX.utils.book_new();
+  // Clientes
+  const hC=['#','Cliente','Región','Fruta','Contacto','Cargo','Tel','Email','Marca Infeed','Equipos Infeed','Marca Calibrador','Modelo Calibrador','Calles','Equipos Calibrador','Marca Llen/Palet','Equipos Llen/Palet'];
+  const rC=CLIENTES.map(c=>[c.r,c.n,c.reg,c.fru,c.nom,c.cargo,c.tel,c.email,c.inf,c.eq_inf,c.cal,c.eq_cal,c.calCal,c.calE,c.pal,c.eq_pal]);
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([hC,...rC]),'Clientes');
+  // Visitas
+  const hV=['Fecha','Hora','Cliente','Región','Contacto','Tel','Estado','Urgencia','Obs.Infeed','Obs.Calibrador','Obs.Llenado','Comentarios'];
+  const rV=lV().map(v=>{const c=getCli(v.cli);return[v.fecha,v.hora,v.cli,c.reg,v.cont,v.tel,v.estado,v.urgencia,v.infOb,v.calOb,v.palOb,v.com];});
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([hV,...rV]),'Visitas');
+  // Servicios
+  const hS=['Ticket','Cliente','Tipo','Sección','Descripción','F.Inicio','F.Fin','Responsable','Estado','Comentarios'];
+  const rS=lS().map(s=>[s.ticket,s.cli,s.tipo,s.sec,s.desc,s.inicio,s.fin,s.responsable,s.estado,s.com]);
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([hS,...rS]),'Servicios');
+  // Repuestos
+  const hR=['Ticket','Cliente','Repuesto','Sección','Fecha necesita','Responsable','Estado','Comentarios'];
+  const rR=lR().map(r=>[r.ticket,r.cli,r.desc,r.sec,r.fecha,r.responsable,r.estado,r.com]);
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([hR,...rR]),'Repuestos');
+  XLSX.writeFile(wb,`NEXOR_CRM_${new Date().toISOString().split('T')[0]}.xlsx`);
+  toast('✓ Excel exportado');
+}
+
+// ── INIT ──
+fillSels();
+renderDash();
+updateBadge();
+syncFromSheets().then(ok=>{
+  if(ok){ renderDash(); updateBadge(); }
+});
+setInterval(()=>syncFromSheets().then(ok=>{ if(ok){ renderDash(); updateBadge(); } }),120000);
+</script>
+</body>
+</html>
