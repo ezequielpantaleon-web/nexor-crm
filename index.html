@@ -168,9 +168,13 @@ tr.ra td{background:rgba(211,47,47,.05)}
 <body>
 <div class="shell">
 <aside class="sidebar">
-  <div class="logo">
-    <div class="logo-text">NE<span>X</span>OR</div>
-    <div class="logo-sub">Automation &amp; Integration Systems</div>
+  <div class="logo" style="padding:16px 14px 14px">
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:30px;letter-spacing:2px;line-height:1;display:flex;align-items:baseline">
+      <span style="color:#fff">NE</span><span style="position:relative;display:inline-block;color:#4CAF50;overflow:hidden"><span style="color:#4CAF50">X</span><span style="position:absolute;top:0;left:50%;right:0;color:#fff;overflow:hidden">X</span></span><span style="color:#fff">OR</span>
+    </div>
+    <div style="font-size:9px;color:rgba(255,255,255,0.45);letter-spacing:2px;text-transform:uppercase;margin-top:5px">CRM · Servicios Postventa</div>
+  </div>
+  </div>
   </div>
   <nav class="nav">
     <div class="ni active" onclick="goTo('dashboard')">◈ Dashboard</div>
@@ -184,10 +188,8 @@ tr.ra td{background:rgba(211,47,47,.05)}
   </nav>
   <div class="sf">
     <div id="sync-status" style="font-size:10px;color:#F57C00;margin-bottom:6px">○ Conectando...</div>
-    <button onclick="syncAllToSheets()" class="btn" style="width:100%;background:rgba(76,175,80,.2);color:#6dcf71;font-size:11px;padding:7px;margin-bottom:4px;border:1px solid rgba(76,175,80,.3)">☁ Sincronizar</button>
     <button onclick="syncFromSheets().then(()=>{renderActive()})" class="btn" style="width:100%;background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);font-size:11px;padding:7px;margin-bottom:4px;border:1px solid rgba(255,255,255,.15)">⟳ Actualizar</button>
     
-    <button onclick="exportarExcel()" class="btn" style="width:100%;background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);font-size:10px;padding:5px;border:1px solid rgba(255,255,255,.1)">⬇ Excel</button>
   </div>
 </aside>
 <div class="main">
@@ -666,13 +668,22 @@ tr.ra td{background:rgba(211,47,47,.05)}
       <button class="btn bp" style="width:100%;padding:12px" onclick="exportarExcel()">
         ⬇ Exportar todo a Excel
       </button>
-      
-      <button class="btn bg" style="width:100%;padding:12px" onclick="syncAllToSheets()">
-        ☁ Sincronizar todo a Sheets
-      </button>
-      
+
       <button class="btn bg" style="width:100%;padding:12px" onclick="syncFromSheets().then(()=>{renderActive();toast('✓ Datos actualizados')})">
         ⟳ Actualizar desde Sheets
+      </button>
+    </div>
+
+    <div class="stitle" style="margin-top:16px">☁ Sincronización forzada — solo admin</div>
+    <div style="background:#EBF4FF;border:1px solid #BBDEFB;border-radius:var(--r);padding:14px;margin-bottom:12px">
+      <div style="font-size:12px;color:var(--blue);font-weight:700;margin-bottom:6px">⚠ Uso exclusivo del administrador</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:12px">Sincronizar reemplaza TODO en Sheets con lo que está en tu pantalla. Si otra persona está trabajando al mismo tiempo puede perder datos.</div>
+      <div class="fg" style="margin-bottom:10px">
+        <label>Contraseña admin</label>
+        <input type="password" id="cfg-sync-pass" class="fi" placeholder="Ingresá la contraseña">
+      </div>
+      <button class="btn" style="width:100%;padding:12px;background:var(--blue);color:#fff" onclick="sincronizarConPass()">
+        ☁ Sincronizar todo a Sheets
       </button>
     </div>
 
@@ -1891,6 +1902,17 @@ function recargarConPass(){
   if(!confirm('¿Seguro? Esto va a reemplazar TODOS los datos de clientes con los datos base originales.')) return;
   cerrar('m-config');
   inicializarClientesEnSheets();
+}
+
+function sincronizarConPass(){
+  const pass = document.getElementById('cfg-sync-pass').value;
+  if(pass !== ADMIN_PASS){
+    toast('⚠ Contraseña incorrecta');
+    return;
+  }
+  if(!confirm('¿Sincronizar todo? Esto reemplaza los datos en Sheets con lo que tenés en pantalla.')) return;
+  cerrar('m-config');
+  syncAllToSheets();
 }
 
 // ── INIT ──
