@@ -69,6 +69,15 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);-webki
 .bc{background:#E8F5E9;color:#2E7D32}
 .bsk{background:#FFEBEE;color:#C62828}
 .br{background:#F0E9FA;color:#6B3FA0}
+.bar-wrap{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.bar-item{display:flex;align-items:center;gap:8px;font-size:12px}
+.bar-label{width:110px;flex-shrink:0;font-weight:600;color:var(--text2);font-size:11px}
+.bar-track{flex:1;height:10px;background:var(--bg3);border-radius:5px;overflow:hidden}
+.bar-fill{height:100%;border-radius:5px;transition:width .4s}
+.bar-num{width:24px;text-align:right;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;flex-shrink:0}
+.urg-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:var(--r2);border:1px solid var(--border);margin-bottom:6px;font-size:12px}
+.urg-venc{border-left:3px solid var(--red);background:var(--red-bg)}
+.urg-prox{border-left:3px solid var(--amber);background:var(--amber-bg)}
 .bsk2{background:#FFEBEE;color:#C62828;font-size:9px;padding:2px 5px}
 .ticket-badge{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;white-space:nowrap}
 .ticket-srv{background:#E3F0FB;color:#1565C0}
@@ -201,8 +210,16 @@ tr.ra td{background:rgba(211,47,47,.05)}
     <div style="height:14px"></div>
     <div class="d3">
       <div class="card"><div class="ct">⚡ Urgencias altas</div><div id="d-urg"></div></div>
-      <div class="card"><div class="ct">📅 Próximas visitas</div><div id="d-prox"></div></div>
-      <div class="card"><div class="ct">🏆 Por región</div><div id="d-reg"></div></div>
+      <div class="card"><div class="ct">🔧 Servicios en proceso</div><div id="d-prox"></div></div>
+      <div class="card"><div class="ct">📍 Clientes por región</div><div id="d-reg"></div></div>
+    </div>
+    <div class="dt" style="margin-top:0;margin-bottom:18px">
+      <div class="card"><div class="ct">❓ Sin información de región</div><div id="d-sin-reg"></div></div>
+      <div class="card"><div class="ct">📋 Sin información de equipamiento</div><div id="d-sin-eq"></div></div>
+    </div>
+    <div class="dt" style="margin-top:16px">
+      <div class="card"><div class="ct">🔧 Servicios por tipo</div><div id="d-srv-tipo"></div></div>
+      <div class="card"><div class="ct">🔩 Repuestos urgentes</div><div id="d-rep-urg"></div></div>
     </div>
   </div>
 </div>
@@ -1867,13 +1884,95 @@ function renderDash(){
   document.getElementById('d-urg').innerHTML=urg.length?urg.map(v=>`<div class="mi"><span class="mn">${v.cli}</span><span class="badge ba">Alta</span></div>`).join(''):'<div class="empty" style="padding:16px;font-size:11px">Sin urgencias altas</div>';
   // Próximas
   const hoy=new Date().toISOString().split('T')[0];
-  const prox=vs.filter(v=>v.estado==='Planificado'&&v.fecha>=hoy).sort((a,b)=>a.fecha.localeCompare(b.fecha)).slice(0,5);
-  document.getElementById('d-prox').innerHTML=prox.length?prox.map(v=>`<div class="mi"><span class="mn">${v.cli}</span><span style="font-family:'DM Mono';font-size:10px;background:var(--blue-bg);color:var(--blue);padding:2px 7px;border-radius:20px">${v.fecha}</span></div>`).join(''):'<div class="empty" style="padding:16px;font-size:11px">Sin planificadas</div>';
+  const srvActivos=ss.filter(s=>s.estado==='En proceso'||s.estado==='Programado').slice(0,5);
+  document.getElementById('d-prox').innerHTML=srvActivos.length
+    ?srvActivos.map(s=>`<div class="mi">
+        <span class="mn">${s.cli}<small style="display:block;font-size:10px;color:var(--text3)">${s.ticket} · ${s.tipo}</small></span>
+        <span style="font-family:'DM Mono';font-size:10px;background:var(--purple-bg);color:var(--purple);padding:2px 7px;border-radius:20px">${s.fin||'—'}</span>
+      </div>`).join('')
+    :'<div class="empty" style="padding:16px;font-size:11px">Sin servicios activos</div>';
   // Regiones
   const rc={};
   vals.filter(v=>v.estado==='Visitado').forEach(v=>{const c=getCli(v.cli);if(c.reg)rc[c.reg]=(rc[c.reg]||0)+1;});
   const sr=Object.entries(rc).sort((a,b)=>b[1]-a[1]).slice(0,5);
   document.getElementById('d-reg').innerHTML=sr.length?sr.map(([r,n])=>`<div class="mi"><span class="mn">${r}</span><span style="background:var(--bg4);color:var(--text2);font-size:10px;padding:2px 7px;border-radius:20px">${n}</span></div>`).join(''):'<div class="empty" style="padding:16px;font-size:11px">Registrá visitas</div>';
+
+  // ── Clientes por región (todos los clientes) ──
+  const regCount={};
+  CLIENTES.forEach(c=>{ if(c.reg) regCount[c.reg]=(regCount[c.reg]||0)+1; });
+  const srAll=Object.entries(regCount).sort((a,b)=>b[1]-a[1]);
+  const maxReg=Math.max(1,...srAll.map(x=>x[1]));
+  document.getElementById('d-reg').innerHTML=srAll.length?`<div class="bar-wrap">${
+    srAll.slice(0,8).map(([r,n])=>`<div class="bar-item">
+      <div class="bar-label" style="width:90px">${r}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/maxReg*100)}%;background:var(--navy)"></div></div>
+      <div class="bar-num" style="color:var(--navy)">${n}</div>
+    </div>`).join('')
+  }</div>`:'<div class="empty" style="padding:16px;font-size:11px">Sin datos</div>';
+
+  // ── Sin información de región ──
+  const sinReg=CLIENTES.filter(c=>!c.reg||c.reg.trim()==='');
+  document.getElementById('d-sin-reg').innerHTML=`
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 0">
+      <div style="font-size:42px;font-weight:800;font-family:'DM Mono',monospace;color:${sinReg.length>0?'var(--amber)':'var(--green2)'}">
+        ${sinReg.length}
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--text)">${sinReg.length===0?'¡Todo completo!':'Clientes sin región'}</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:2px">de ${CLIENTES.length} clientes totales</div>
+      </div>
+    </div>
+    ${sinReg.length>0?`<div style="font-size:11px;color:var(--text2);margin-top:4px">${sinReg.slice(0,4).map(c=>'· '+c.n).join('<br>')}</div>`:''}`;
+
+  // ── Sin información de equipamiento ──
+  const sinEq=CLIENTES.filter(c=>!c.inf&&!c.cal&&!c.pal);
+  document.getElementById('d-sin-eq').innerHTML=`
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 0">
+      <div style="font-size:42px;font-weight:800;font-family:'DM Mono',monospace;color:${sinEq.length>0?'var(--amber)':'var(--green2)'}">
+        ${sinEq.length}
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--text)">${sinEq.length===0?'¡Todo completo!':'Sin equipamiento'}</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:2px">calibrador, infeed o llenado vacíos</div>
+      </div>
+    </div>
+    ${sinEq.length>0?`<div style="font-size:11px;color:var(--text2);margin-top:4px">${sinEq.slice(0,4).map(c=>'· '+c.n).join('<br>')}</div>`:''}`;
+
+  // ── Servicios por tipo ──
+  const tiposConfig=[
+    {k:'Mecánico',c:'#D32F2F'},{k:'Eléctrico',c:'#F57C00'},
+    {k:'Automatización',c:'#388E3C'},{k:'Control Línea',c:'#1976D2'},{k:'Téc. Campo',c:'#6B3FA0'}
+  ];
+  const maxTipo=Math.max(1,...tiposConfig.map(t=>ss.filter(s=>s.tipo===t.k).length));
+  document.getElementById('d-srv-tipo').innerHTML=`<div class="bar-wrap">${
+    tiposConfig.map(t=>{
+      const n=ss.filter(s=>s.tipo===t.k).length;
+      const pct=Math.round((n/maxTipo)*100);
+      return `<div class="bar-item">
+        <div class="bar-label">${t.k}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${t.c}"></div></div>
+        <div class="bar-num" style="color:${t.c}">${n}</div>
+      </div>`;
+    }).join('')
+  }</div>${ss.length===0?'<div style="color:var(--text3);font-size:11px;text-align:center;margin-top:8px">Sin servicios registrados</div>':''}`;
+
+  // ── Repuestos urgentes ──
+  const hoyD=new Date().toISOString().split('T')[0];
+  const prox7D=new Date(Date.now()+7*86400000).toISOString().split('T')[0];
+  const vencidos=rr.filter(r=>r.fecha&&r.fecha<hoyD&&r.estado!=='Entregado'&&r.estado!=='Cerrado');
+  const proximos=rr.filter(r=>r.fecha&&r.fecha>=hoyD&&r.fecha<=prox7D&&r.estado!=='Entregado'&&r.estado!=='Cerrado');
+  const repUrgHtml=[
+    ...vencidos.map(r=>`<div class="urg-item urg-venc">
+      <div><div style="font-weight:700">${r.cli}</div><div style="font-size:10px;color:var(--red)">${r.desc?r.desc.substring(0,40)+'...':r.ticket}</div></div>
+      <div style="text-align:right"><div style="font-family:'DM Mono';font-size:11px;color:var(--red);font-weight:700">${r.fecha}</div><div style="font-size:10px;color:var(--red)">⚠ Vencido</div></div>
+    </div>`),
+    ...proximos.map(r=>`<div class="urg-item urg-prox">
+      <div><div style="font-weight:700">${r.cli}</div><div style="font-size:10px;color:var(--amber)">${r.desc?r.desc.substring(0,40)+'...':r.ticket}</div></div>
+      <div style="text-align:right"><div style="font-family:'DM Mono';font-size:11px;color:var(--amber);font-weight:700">${r.fecha}</div><div style="font-size:10px;color:var(--amber)">⏰ Esta semana</div></div>
+    </div>`)
+  ].join('');
+  document.getElementById('d-rep-urg').innerHTML=repUrgHtml||'<div class="empty" style="padding:16px;font-size:11px;color:var(--green2)">✓ Sin repuestos urgentes</div>';
+
   updateBadge();
 }
 
