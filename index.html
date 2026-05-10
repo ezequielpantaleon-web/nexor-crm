@@ -168,12 +168,9 @@ tr.ra td{background:rgba(211,47,47,.05)}
 <body>
 <div class="shell">
 <aside class="sidebar">
-  <div class="logo" style="padding:16px 14px 14px">
-    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:28px;letter-spacing:2px;color:#fff;line-height:1">
-      NE<span style="color:#4CAF50">X</span>OR
-    </div>
-    <div style="font-size:9px;color:rgba(255,255,255,0.45);letter-spacing:2px;text-transform:uppercase;margin-top:5px">CRM · Servicios Postventa</div>
-  </div>
+  <div class="logo">
+    <div class="logo-text">NE<span>X</span>OR</div>
+    <div class="logo-sub">CRM · Servicios Postventa</div>
   </div>
   <nav class="nav">
     <div class="ni active" onclick="goTo('dashboard')">◈ Dashboard</div>
@@ -188,7 +185,6 @@ tr.ra td{background:rgba(211,47,47,.05)}
   <div class="sf">
     <div id="sync-status" style="font-size:10px;color:#F57C00;margin-bottom:6px">○ Conectando...</div>
     <button onclick="syncFromSheets().then(()=>{renderActive()})" class="btn" style="width:100%;background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);font-size:11px;padding:7px;margin-bottom:4px;border:1px solid rgba(255,255,255,.15)">⟳ Actualizar</button>
-    
   </div>
 </aside>
 <div class="main">
@@ -350,11 +346,9 @@ tr.ra td{background:rgba(211,47,47,.05)}
     <div style="margin-top:16px"><div class="card"><div class="ct">Todas las visitas</div><div class="tw">
       <table><thead><tr><th>Ticket</th><th>Fecha</th><th>Hora</th><th>Cliente</th><th>Región</th><th>Contacto</th><th>Tel.</th><th>Estado</th><th>Urgencia</th><th></th></tr></thead>
       <tbody id="tb-ag"></tbody></table>
-    </div></div></div>
+    </div></div></div></div>
   </div>
 </div>
-
-</div></div>
 
 <!-- MODAL CLIENTE -->
 <div id="m-cliente" class="ov" style="display:none" onclick="if(event.target===this)cerrar('m-cliente')">
@@ -703,6 +697,7 @@ tr.ra td{background:rgba(211,47,47,.05)}
       v17 · NEXOR CRM · <a href="https://ezequielpantaleon-web.github.io/nexor-crm/" style="color:var(--green2)" target="_blank">nexor-crm</a>
     </div>
   </div>
+</div>
 </div>
 </div>
 
