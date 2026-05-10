@@ -202,24 +202,23 @@ tr.ra td{background:rgba(211,47,47,.05)}
 <div id="sec-dashboard" class="sec active">
   <div class="topbar"><h1>Dashboard</h1></div>
   <div class="page">
-    <div class="dg5" id="d-stats"></div>
-    <div class="dt">
+    <!-- FILA 1: 4 stats -->
+    <div class="dg4" id="d-stats"></div>
+    <!-- FILA 2: Visitas + Criticidad -->
+    <div class="dt" style="margin-bottom:14px">
       <div class="card"><div class="ct">📍 Mis visitas</div><div id="d-vis"></div></div>
-      <div class="card"><div class="ct">🔧 Servicios &amp; Repuestos</div><div id="d-srv"></div></div>
+      <div class="card"><div class="ct">📊 Criticidad — Servicios &amp; Repuestos</div><div id="d-crit"></div></div>
     </div>
-    <div style="height:14px"></div>
-    <div class="d3">
-      <div class="card"><div class="ct">⚡ Urgencias altas</div><div id="d-urg"></div></div>
-      <div class="card"><div class="ct">🔧 Servicios en proceso</div><div id="d-prox"></div></div>
-      <div class="card"><div class="ct">📍 Clientes por región</div><div id="d-reg"></div></div>
+    <!-- FILA 3: Región + Sin datos -->
+    <div class="d3" style="margin-bottom:14px">
+      <div class="card"><div class="ct">🗺 Clientes por zona</div><div id="d-reg"></div></div>
+      <div class="card"><div class="ct">❓ Sin región asignada</div><div id="d-sin-reg"></div></div>
+      <div class="card"><div class="ct">📋 Sin equipamiento</div><div id="d-sin-eq"></div></div>
     </div>
-    <div class="dt" style="margin-top:0;margin-bottom:18px">
-      <div class="card"><div class="ct">❓ Sin información de región</div><div id="d-sin-reg"></div></div>
-      <div class="card"><div class="ct">📋 Sin información de equipamiento</div><div id="d-sin-eq"></div></div>
-    </div>
-    <div class="dt" style="margin-top:16px">
+    <!-- FILA 4: Tipos srv + Repuestos urgentes -->
+    <div class="dt">
       <div class="card"><div class="ct">🔧 Servicios por tipo</div><div id="d-srv-tipo"></div></div>
-      <div class="card"><div class="ct">🔩 Repuestos urgentes</div><div id="d-rep-urg"></div></div>
+      <div class="card"><div class="ct">🔩 Repuestos con fecha límite</div><div id="d-rep-urg"></div></div>
     </div>
   </div>
 </div>
@@ -291,8 +290,9 @@ tr.ra td{background:rgba(211,47,47,.05)}
     <div class="dg4" id="sv-stats"></div>
     <div style="height:12px"></div>
     <div class="filters">
-      <select class="fi" id="fs-est" onchange="renderSrv()"><option value="">Todo estado</option>
+      <select class="fi" id="fs-est" onchange="renderSrv()"><option value="">Activos</option>
         <option>Pendiente</option><option>En proceso</option><option>Programado</option><option>Completado</option>
+        <option value="concluidos">Ver historial (Concluidos)</option>
       </select>
       <select class="fi" id="fs-tipo" onchange="renderSrv()"><option value="">Todo tipo</option>
         <option>Mecánico</option><option>Eléctrico</option><option>Automatización</option>
@@ -302,7 +302,7 @@ tr.ra td{background:rgba(211,47,47,.05)}
     <div class="card" style="padding:0;overflow:hidden"><div class="tw">
       <table><thead><tr>
         <th>Ticket</th><th>Cliente</th><th>Tipo</th><th>Descripción</th><th>Sección</th>
-        <th>F. Inicio</th><th>F. Fin</th><th>Responsable</th><th>Estado</th><th></th>
+        <th>F. Inicio</th><th>F. Fin</th><th>Responsable</th><th>Criticidad</th><th>Estado</th><th></th>
       </tr></thead><tbody id="tb-srv"></tbody></table>
     </div></div>
   </div>
@@ -325,7 +325,7 @@ tr.ra td{background:rgba(211,47,47,.05)}
     <div class="card" style="padding:0;overflow:hidden"><div class="tw">
       <table><thead><tr>
         <th>Ticket</th><th>Cliente</th><th>Repuesto solicitado</th><th>Sección</th>
-        <th>F. Necesita</th><th>Responsable</th><th>Estado</th><th>Comentarios</th><th></th>
+        <th>F. Necesita</th><th>Responsable</th><th>Criticidad</th><th>Estado</th><th>Comentarios</th><th></th>
       </tr></thead><tbody id="tb-rep"></tbody></table>
     </div></div>
   </div>
@@ -591,9 +591,15 @@ tr.ra td{background:rgba(211,47,47,.05)}
       <div class="fg"><label>Fecha inicio</label><input type="date" id="s-ini" class="fi"></div>
       <div class="fg"><label>Fecha fin / entrega</label><input type="date" id="s-fin" class="fi"></div>
       <div class="fg"><label>Responsable técnico</label><input type="text" id="s-resp" class="fi" placeholder="Nombre del técnico asignado"></div>
+      <div class="fg"><label>Criticidad</label>
+        <select id="s-crit" class="fi">
+          <option value="">Sin asignar</option>
+          <option>Alta</option><option>Media</option><option>Baja</option>
+        </select>
+      </div>
       <div class="fg"><label>Estado</label>
         <select id="s-est" class="fi">
-          <option>Pendiente</option><option>En proceso</option><option>Programado</option><option>Completado</option><option>Cancelado</option>
+          <option>Pendiente</option><option>En proceso</option><option>Programado</option><option>Completado</option><option>Concluido</option><option>Cancelado</option>
         </select>
       </div>
       <div class="fg full"><label>Descripción del trabajo</label>
@@ -647,9 +653,15 @@ tr.ra td{background:rgba(211,47,47,.05)}
       </div>
       <div class="fg"><label>Fecha que lo necesita</label><input type="date" id="r-fecha" class="fi"></div>
       <div class="fg"><label>Responsable</label><input type="text" id="r-resp" class="fi" placeholder="Quién gestiona el repuesto"></div>
+      <div class="fg"><label>Criticidad</label>
+        <select id="r-crit" class="fi">
+          <option value="">Sin asignar</option>
+          <option>Alta</option><option>Media</option><option>Baja</option>
+        </select>
+      </div>
       <div class="fg"><label>Estado</label>
         <select id="r-est" class="fi">
-          <option>Pendiente</option><option>En proceso</option><option>Entregado</option><option>Cerrado</option>
+          <option>Pendiente</option><option>En proceso</option><option>Entregado</option><option>Concluido</option><option>Cerrado</option>
         </select>
       </div>
       <div class="fg full"><label>Comentarios</label>
@@ -1267,6 +1279,7 @@ function eqTab(i,el){ document.querySelectorAll('.eqt').forEach(t=>t.classList.r
 
 function bE(e){ const m={Visitado:'bv',Planificado:'bpl',Pendiente:'bpe',Cancelado:'bpe'}; return `<span class="badge ${m[e]||'bpe'}">${e||'Pendiente'}</span>`; }
 function bU(u){ if(!u) return ''; const m={Alta:'ba',Media:'bm',Normal:'bpe'}; return `<span class="badge ${m[u]||'bpe'}">${u}</span>`; }
+function bCrit(c){ if(!c||c==='Sin asignar') return '<span class="badge bpe">—</span>'; const m={Alta:'ba',Media:'bm',Baja:'bv'}; return `<span class="badge ${m[c]||'bpe'}">${c}</span>`; }
 function bSt(s){ if(!s||s==='Sin seguimiento'||s==='Pendiente') return '<span class="badge bpe">Pendiente</span>'; if(s==='En proceso') return '<span class="badge bpr">🔧 En proceso</span>'; if(s==='Programado') return '<span class="badge bpl">📅 Programado</span>'; if(s==='Completado'||s==='Entregado') return `<span class="badge bg2c">✓ ${s}</span>`; if(s==='Cerrado') return '<span class="badge bg2c">✓ Cerrado</span>'; if(s.includes('Presupuesto')) return '<span class="badge bps">📋 Presup.</span>'; return `<span class="badge bpe">${s}</span>`; }
 function bM(m){ if(!m) return '—'; const mp={FOMESA:'bf',SIENZ:'bsi','COMPAC/TOMRA':'bc',SUNKIST:'bsk',REEMOON:'br'}; return `<span class="badge ${mp[m]||'bpe'}">${m}</span>`; }
 
@@ -1585,6 +1598,7 @@ function abrirServicio(id){
   ['s-desc','s-com','s-resp','s-ini','s-fin'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});
   ['s-cli','s-sec'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});
   document.getElementById('s-tipo').value='Mecánico';
+  document.getElementById('s-crit').value='';
   document.getElementById('s-est').value='Pendiente';
   document.getElementById('s-cli-info').style.display='none';
 
@@ -1599,6 +1613,7 @@ function abrirServicio(id){
     document.getElementById('s-ini').value=s.inicio||'';
     document.getElementById('s-fin').value=s.fin||'';
     document.getElementById('s-resp').value=s.responsable||'';
+    document.getElementById('s-crit').value=s.criticidad||'';
     document.getElementById('s-est').value=s.estado||'Pendiente';
     document.getElementById('s-desc').value=s.desc||'';
     document.getElementById('s-com').value=s.com||'';
@@ -1621,6 +1636,7 @@ function guardarServicio(){
     inicio:document.getElementById('s-ini').value,
     fin:document.getElementById('s-fin').value,
     responsable:document.getElementById('s-resp').value.trim(),
+    criticidad:document.getElementById('s-crit').value,
     estado:document.getElementById('s-est').value,
     desc:document.getElementById('s-desc').value.trim(),
     com:document.getElementById('s-com').value.trim(),
@@ -1637,7 +1653,12 @@ function renderSrv(){
   const ss=lS();
   const fE=document.getElementById('fs-est')?.value||'';
   const fT=document.getElementById('fs-tipo')?.value||'';
-  const filtered=ss.filter(s=>(!fE||s.estado===fE)&&(!fT||s.tipo===fT));
+  const esConcluidos=fE==='concluidos';
+  const filtered=ss.filter(s=>{
+    if(esConcluidos) return s.estado==='Concluido'||s.estado==='Cancelado';
+    const activo=s.estado!=='Concluido'&&s.estado!=='Cancelado';
+    return activo&&(!fE||s.estado===fE)&&(!fT||s.tipo===fT);
+  });
   // Stats
   const tipos={Mecánico:0,Eléctrico:0,Automatización:0,'Control Línea':0,'Téc. Campo':0};
   ss.forEach(s=>{ if(tipos[s.tipo]!==undefined) tipos[s.tipo]++; });
@@ -1656,6 +1677,7 @@ function renderSrv(){
       <td style="font-family:'DM Mono';font-size:11px;white-space:nowrap">${s.inicio||'—'}</td>
       <td style="font-family:'DM Mono';font-size:11px;white-space:nowrap">${s.fin||'—'}</td>
       <td style="font-size:11px">${s.responsable||'—'}</td>
+      <td>${bCrit(s.criticidad)}</td>
       <td>${bSt(s.estado)}</td>
       <td style="white-space:nowrap">
         <button class="btn bg bs" onclick="abrirServicio('${s.id}')">✎</button>
@@ -1683,6 +1705,7 @@ function abrirRepuesto(id){
   document.getElementById('mr-title').textContent='Nuevo Repuesto';
   ['r-desc','r-resp','r-fecha','r-com'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});
   ['r-cli','r-sec'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});
+  document.getElementById('r-crit').value='';
   document.getElementById('r-est').value='Pendiente';
   document.getElementById('r-cli-info').style.display='none';
   if(id){
@@ -1695,6 +1718,7 @@ function abrirRepuesto(id){
     document.getElementById('r-sec').value=r.sec||'';
     document.getElementById('r-fecha').value=r.fecha||'';
     document.getElementById('r-resp').value=r.responsable||'';
+    document.getElementById('r-crit').value=r.criticidad||'';
     document.getElementById('r-est').value=r.estado||'Pendiente';
     document.getElementById('r-com').value=r.com||'';
   } else {
@@ -1718,6 +1742,7 @@ function guardarRepuesto(){
     inicio:document.getElementById('r-fecha').value,
     fin:document.getElementById('r-fecha').value,
     responsable:document.getElementById('r-resp').value.trim(),
+    criticidad:document.getElementById('r-crit').value,
     estado:document.getElementById('r-est').value,
     com:document.getElementById('r-com').value.trim(),
     ts:Date.now(),
@@ -1732,7 +1757,12 @@ function guardarRepuesto(){
 function renderRep(){
   const rr=lR();
   const fE=document.getElementById('fr-est')?.value||'';
-  const filtered=rr.filter(r=>!fE||r.estado===fE);
+  const esConcluidos=fE==='concluidos';
+  const filtered=rr.filter(r=>{
+    if(esConcluidos) return r.estado==='Concluido'||r.estado==='Cerrado';
+    const activo=r.estado!=='Concluido'&&r.estado!=='Cerrado';
+    return activo&&(!fE||r.estado===fE);
+  });
   const hoy=new Date().toISOString().split('T')[0];
   const prox7=new Date(Date.now()+7*86400000).toISOString().split('T')[0];
   // Stats
@@ -1756,6 +1786,7 @@ function renderRep(){
         <td style="font-size:11px">${r.sec||'—'}</td>
         <td style="font-family:'DM Mono';font-size:11px;white-space:nowrap;${fStyle}">${r.fecha||'—'}${vencido?' ⚠':pronto?' ⏰':''}</td>
         <td style="font-size:11px">${r.responsable||'—'}</td>
+        <td>${bCrit(r.criticidad)}</td>
         <td>${bSt(r.estado)}</td>
         <td style="font-size:11px;max-width:160px;color:var(--text2)">${r.com||'—'}</td>
         <td style="white-space:nowrap">
@@ -1846,137 +1877,144 @@ function renderAg(){
 // ── DASHBOARD ──
 function renderDash(){
   const vs=lV(), ss=lS(), rr=lR();
+
+  // ── FILA 1: Stats principales ──
   const ep={}; vs.forEach(v=>{if(!ep[v.cli]||v.ts>ep[v.cli].ts) ep[v.cli]=v;});
   const vals=Object.values(ep);
   const nV=vals.filter(v=>v.estado==='Visitado').length;
   const nP=vals.filter(v=>v.estado==='Planificado').length;
   const nPe=CLIENTES.length-nV-nP;
   const nA=vals.filter(v=>v.urgencia==='Alta').length;
-  const nEP=ss.filter(s=>s.estado==='En proceso').length;
   document.getElementById('d-stats').innerHTML=`
     <div class="sc" style="border-top-color:var(--green2)"><div class="sn" style="color:var(--green2)">${nV}</div><div class="sl">Visitados</div><div class="ss">de ${CLIENTES.length}</div></div>
     <div class="sc" style="border-top-color:var(--blue)"><div class="sn" style="color:var(--blue)">${nP}</div><div class="sl">Planificados</div></div>
-    <div class="sc" style="border-top-color:var(--amber)"><div class="sn" style="color:var(--amber)">${nPe}</div><div class="sl">Pendientes</div></div>
-    <div class="sc" style="border-top-color:var(--red)"><div class="sn" style="color:var(--red)">${nA}</div><div class="sl">Urgencia alta</div></div>
-    <div class="sc" style="border-top-color:var(--purple)"><div class="sn" style="color:var(--purple)">${nEP}</div><div class="sl">Serv. activos</div></div>`;
+    <div class="sc" style="border-top-color:var(--amber)"><div class="sn" style="color:var(--amber)">${nPe}</div><div class="sl">Sin visitar</div></div>
+    <div class="sc" style="border-top-color:var(--red)"><div class="sn" style="color:var(--red)">${nA}</div><div class="sl">Urgencia alta</div></div>`;
+
+  // ── FILA 2a: Mis visitas ──
   const pct=n=>Math.round((n/Math.max(CLIENTES.length,1))*100);
   document.getElementById('d-vis').innerHTML=`<div style="display:flex;flex-direction:column;gap:10px">
-    ${[['Visitados',nV,'var(--green2)'],['Planificados',nP,'var(--blue)'],['Pendientes',nPe,'var(--text3)']].map(([l,n,c])=>`
+    ${[['Visitados',nV,'var(--green2)'],['Planificados',nP,'var(--blue)'],['Sin visitar',nPe,'var(--text3)']].map(([l,n,c])=>`
       <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span>${l}</span><span style="font-family:'DM Mono';color:${c}">${n} (${pct(n)}%)</span></div>
       <div class="pb"><div class="pf" style="width:${pct(n)}%;background:${c}"></div></div></div>`).join('')}
     <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:11px;color:var(--text3)">Últimas visitas</div>
     ${vs.slice(0,4).map(v=>'<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px"><div style="flex:1;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+v.cli+'</div><span style="font-size:10px;color:var(--text3)">'+( v.fecha||'-')+'</span>'+bE(v.estado)+'</div>').join('')||'<div style="color:var(--text3);font-size:12px;padding:8px 0">Sin visitas aún</div>'}
   </div>`;
-  const peSt={Pendiente:ss.filter(s=>s.estado==='Pendiente').length,EnProceso:ss.filter(s=>s.estado==='En proceso').length,Completado:ss.filter(s=>s.estado==='Completado').length};
-  document.getElementById('d-srv').innerHTML=`<div style="display:flex;flex-direction:column;gap:8px">
-    <div style="display:flex;gap:10px;margin-bottom:4px">
-      ${[['Servicios',ss.length,'#1976D2'],['Repuestos',rr.length,'#388E3C']].map(([l,n,c])=>`<div style="flex:1;background:var(--bg3);border-radius:6px;border:1px solid var(--border);padding:10px;text-align:center"><div style="font-size:22px;font-weight:800;font-family:'DM Mono';color:${c}">${n}</div><div style="font-size:10px;color:var(--text2);font-weight:700;text-transform:uppercase">${l}</div></div>`).join('')}
-    </div>
-    ${[['Pendiente',peSt.Pendiente,'var(--text3)'],['En proceso',peSt.EnProceso,'var(--purple)'],['Completado',peSt.Completado,'var(--green2)']].map(([l,n,c])=>`
-      <div style="display:flex;align-items:center;gap:10px;padding:7px 10px;background:var(--bg3);border-radius:6px;border:1px solid var(--border)">
-        <div style="width:8px;height:8px;border-radius:50%;background:${c};flex-shrink:0"></div>
-        <div style="flex:1;font-size:12px">${l}</div>
-        <div style="font-family:'DM Mono';font-size:14px;font-weight:700;color:${c}">${n}</div>
-      </div>`).join('')}
-  </div>`;
-  // Urgencias
-  const urg=vals.filter(v=>v.urgencia==='Alta').slice(0,5);
-  document.getElementById('d-urg').innerHTML=urg.length?urg.map(v=>`<div class="mi"><span class="mn">${v.cli}</span><span class="badge ba">Alta</span></div>`).join(''):'<div class="empty" style="padding:16px;font-size:11px">Sin urgencias altas</div>';
-  // Próximas
-  const hoy=new Date().toISOString().split('T')[0];
-  const srvActivos=ss.filter(s=>s.estado==='En proceso'||s.estado==='Programado').slice(0,5);
-  document.getElementById('d-prox').innerHTML=srvActivos.length
-    ?srvActivos.map(s=>`<div class="mi">
-        <span class="mn">${s.cli}<small style="display:block;font-size:10px;color:var(--text3)">${s.ticket} · ${s.tipo}</small></span>
-        <span style="font-family:'DM Mono';font-size:10px;background:var(--purple-bg);color:var(--purple);padding:2px 7px;border-radius:20px">${s.fin||'—'}</span>
-      </div>`).join('')
-    :'<div class="empty" style="padding:16px;font-size:11px">Sin servicios activos</div>';
-  // Regiones
-  const rc={};
-  vals.filter(v=>v.estado==='Visitado').forEach(v=>{const c=getCli(v.cli);if(c.reg)rc[c.reg]=(rc[c.reg]||0)+1;});
-  const sr=Object.entries(rc).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  document.getElementById('d-reg').innerHTML=sr.length?sr.map(([r,n])=>`<div class="mi"><span class="mn">${r}</span><span style="background:var(--bg4);color:var(--text2);font-size:10px;padding:2px 7px;border-radius:20px">${n}</span></div>`).join(''):'<div class="empty" style="padding:16px;font-size:11px">Registrá visitas</div>';
 
-  // ── Clientes por región (todos los clientes) ──
+  // ── FILA 2b: Criticidad SRV + REP ──
+  const ssAct=ss.filter(s=>s.estado!=='Concluido'&&s.estado!=='Cancelado');
+  const rrAct=rr.filter(r=>r.estado!=='Concluido'&&r.estado!=='Cerrado');
+  const critData=[
+    {l:'Alta',   c:'var(--red)',    ns:ssAct.filter(s=>s.criticidad==='Alta').length,    nr:rrAct.filter(r=>r.criticidad==='Alta').length},
+    {l:'Media',  c:'var(--amber)',  ns:ssAct.filter(s=>s.criticidad==='Media').length,   nr:rrAct.filter(r=>r.criticidad==='Media').length},
+    {l:'Baja',   c:'var(--green2)',ns:ssAct.filter(s=>s.criticidad==='Baja').length,    nr:rrAct.filter(r=>r.criticidad==='Baja').length},
+    {l:'Sin asig',c:'var(--text3)',ns:ssAct.filter(s=>!s.criticidad).length,             nr:rrAct.filter(r=>!r.criticidad).length},
+  ];
+  const maxCrit=Math.max(1,...critData.map(x=>x.ns+x.nr));
+  document.getElementById('d-crit').innerHTML=`
+    <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px">
+      <span>Nivel</span><span style="display:flex;gap:16px"><span style="color:#1976D2">■ Servicios (${ssAct.length})</span><span style="color:#388E3C">■ Repuestos (${rrAct.length})</span></span>
+    </div>
+    <div class="bar-wrap">
+    ${critData.map(x=>{
+      const pSrv=Math.round(x.ns/maxCrit*100);
+      const pRep=Math.round(x.nr/maxCrit*100);
+      return `<div class="bar-item">
+        <div class="bar-label" style="width:75px;color:${x.c};font-weight:700">${x.l}</div>
+        <div class="bar-track" style="position:relative;height:14px;border-radius:7px">
+          <div style="position:absolute;left:0;top:0;height:100%;width:${pSrv}%;background:#1976D2;border-radius:7px 0 0 7px"></div>
+          <div style="position:absolute;left:${pSrv}%;top:0;height:100%;width:${pRep}%;background:#388E3C"></div>
+        </div>
+        <div style="width:48px;text-align:right;font-size:11px;font-family:'DM Mono'">
+          <span style="color:#1976D2">${x.ns}</span><span style="color:var(--text3)"> / </span><span style="color:#388E3C">${x.nr}</span>
+        </div>
+      </div>`;
+    }).join('')}
+    </div>
+    ${ssAct.length===0&&rrAct.length===0?'<div style="color:var(--green2);font-size:12px;text-align:center;margin-top:12px">✓ Sin pendientes activos</div>':''}`;
+
+  // ── FILA 3: Clientes por zona ──
   const regCount={};
   CLIENTES.forEach(c=>{ if(c.reg) regCount[c.reg]=(regCount[c.reg]||0)+1; });
   const srAll=Object.entries(regCount).sort((a,b)=>b[1]-a[1]);
   const maxReg=Math.max(1,...srAll.map(x=>x[1]));
   document.getElementById('d-reg').innerHTML=srAll.length?`<div class="bar-wrap">${
     srAll.slice(0,8).map(([r,n])=>`<div class="bar-item">
-      <div class="bar-label" style="width:90px">${r}</div>
+      <div class="bar-label" style="width:85px">${r}</div>
       <div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/maxReg*100)}%;background:var(--navy)"></div></div>
       <div class="bar-num" style="color:var(--navy)">${n}</div>
     </div>`).join('')
   }</div>`:'<div class="empty" style="padding:16px;font-size:11px">Sin datos</div>';
 
-  // ── Sin información de región ──
+  // Sin región
   const sinReg=CLIENTES.filter(c=>!c.reg||c.reg.trim()==='');
   document.getElementById('d-sin-reg').innerHTML=`
     <div style="display:flex;align-items:center;gap:12px;padding:10px 0">
-      <div style="font-size:42px;font-weight:800;font-family:'DM Mono',monospace;color:${sinReg.length>0?'var(--amber)':'var(--green2)'}">
+      <div style="font-size:42px;font-weight:800;font-family:'DM Mono';color:${sinReg.length>0?'var(--amber)':'var(--green2)'}">
         ${sinReg.length}
       </div>
       <div>
-        <div style="font-size:13px;font-weight:700;color:var(--text)">${sinReg.length===0?'¡Todo completo!':'Clientes sin región'}</div>
-        <div style="font-size:11px;color:var(--text2);margin-top:2px">de ${CLIENTES.length} clientes totales</div>
+        <div style="font-size:13px;font-weight:700">${sinReg.length===0?'¡Completo!':'Clientes'}</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:2px">sin región asignada</div>
       </div>
     </div>
-    ${sinReg.length>0?`<div style="font-size:11px;color:var(--text2);margin-top:4px">${sinReg.slice(0,4).map(c=>'· '+c.n).join('<br>')}</div>`:''}`;
+    ${sinReg.length>0?`<div style="font-size:11px;color:var(--text2)">${sinReg.slice(0,3).map(c=>'· '+c.n).join('<br>')}</div>`:''}`;
 
-  // ── Sin información de equipamiento ──
+  // Sin equipamiento
   const sinEq=CLIENTES.filter(c=>!c.inf&&!c.cal&&!c.pal);
   document.getElementById('d-sin-eq').innerHTML=`
     <div style="display:flex;align-items:center;gap:12px;padding:10px 0">
-      <div style="font-size:42px;font-weight:800;font-family:'DM Mono',monospace;color:${sinEq.length>0?'var(--amber)':'var(--green2)'}">
+      <div style="font-size:42px;font-weight:800;font-family:'DM Mono';color:${sinEq.length>0?'var(--amber)':'var(--green2)'}">
         ${sinEq.length}
       </div>
       <div>
-        <div style="font-size:13px;font-weight:700;color:var(--text)">${sinEq.length===0?'¡Todo completo!':'Sin equipamiento'}</div>
-        <div style="font-size:11px;color:var(--text2);margin-top:2px">calibrador, infeed o llenado vacíos</div>
+        <div style="font-size:13px;font-weight:700">${sinEq.length===0?'¡Completo!':'Clientes'}</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:2px">sin equipamiento</div>
       </div>
     </div>
-    ${sinEq.length>0?`<div style="font-size:11px;color:var(--text2);margin-top:4px">${sinEq.slice(0,4).map(c=>'· '+c.n).join('<br>')}</div>`:''}`;
+    ${sinEq.length>0?`<div style="font-size:11px;color:var(--text2)">${sinEq.slice(0,3).map(c=>'· '+c.n).join('<br>')}</div>`:''}`;
 
-  // ── Servicios por tipo ──
+  // ── FILA 4a: Servicios por tipo ──
   const tiposConfig=[
     {k:'Mecánico',c:'#D32F2F'},{k:'Eléctrico',c:'#F57C00'},
     {k:'Automatización',c:'#388E3C'},{k:'Control Línea',c:'#1976D2'},{k:'Téc. Campo',c:'#6B3FA0'}
   ];
-  const maxTipo=Math.max(1,...tiposConfig.map(t=>ss.filter(s=>s.tipo===t.k).length));
+  const maxTipo=Math.max(1,...tiposConfig.map(t=>ssAct.filter(s=>s.tipo===t.k).length));
   document.getElementById('d-srv-tipo').innerHTML=`<div class="bar-wrap">${
     tiposConfig.map(t=>{
-      const n=ss.filter(s=>s.tipo===t.k).length;
-      const pct=Math.round((n/maxTipo)*100);
+      const n=ssAct.filter(s=>s.tipo===t.k).length;
       return `<div class="bar-item">
         <div class="bar-label">${t.k}</div>
-        <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${t.c}"></div></div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/maxTipo*100)}%;background:${t.c}"></div></div>
         <div class="bar-num" style="color:${t.c}">${n}</div>
       </div>`;
     }).join('')
-  }</div>${ss.length===0?'<div style="color:var(--text3);font-size:11px;text-align:center;margin-top:8px">Sin servicios registrados</div>':''}`;
+  }</div>${ssAct.length===0?'<div style="color:var(--text3);font-size:11px;text-align:center;margin-top:8px">Sin servicios activos</div>':''}`;
 
-  // ── Repuestos urgentes ──
+  // ── FILA 4b: Repuestos con fecha ──
   const hoyD=new Date().toISOString().split('T')[0];
   const prox7D=new Date(Date.now()+7*86400000).toISOString().split('T')[0];
-  const vencidos=rr.filter(r=>r.fecha&&r.fecha<hoyD&&r.estado!=='Entregado'&&r.estado!=='Cerrado');
-  const proximos=rr.filter(r=>r.fecha&&r.fecha>=hoyD&&r.fecha<=prox7D&&r.estado!=='Entregado'&&r.estado!=='Cerrado');
-  const repUrgHtml=[
+  const vencidos=rrAct.filter(r=>r.fecha&&r.fecha<hoyD);
+  const proximos=rrAct.filter(r=>r.fecha&&r.fecha>=hoyD&&r.fecha<=prox7D);
+  const sinFecha=rrAct.filter(r=>!r.fecha);
+  const repHtml=[
     ...vencidos.map(r=>`<div class="urg-item urg-venc">
-      <div><div style="font-weight:700">${r.cli}</div><div style="font-size:10px;color:var(--red)">${r.desc?r.desc.substring(0,40)+'...':r.ticket}</div></div>
+      <div><div style="font-weight:700;font-size:12px">${r.cli}</div><div style="font-size:10px;color:var(--red)">${r.ticket}</div></div>
       <div style="text-align:right"><div style="font-family:'DM Mono';font-size:11px;color:var(--red);font-weight:700">${r.fecha}</div><div style="font-size:10px;color:var(--red)">⚠ Vencido</div></div>
     </div>`),
     ...proximos.map(r=>`<div class="urg-item urg-prox">
-      <div><div style="font-weight:700">${r.cli}</div><div style="font-size:10px;color:var(--amber)">${r.desc?r.desc.substring(0,40)+'...':r.ticket}</div></div>
+      <div><div style="font-weight:700;font-size:12px">${r.cli}</div><div style="font-size:10px;color:var(--amber)">${r.ticket}</div></div>
       <div style="text-align:right"><div style="font-family:'DM Mono';font-size:11px;color:var(--amber);font-weight:700">${r.fecha}</div><div style="font-size:10px;color:var(--amber)">⏰ Esta semana</div></div>
     </div>`)
   ].join('');
-  document.getElementById('d-rep-urg').innerHTML=repUrgHtml||'<div class="empty" style="padding:16px;font-size:11px;color:var(--green2)">✓ Sin repuestos urgentes</div>';
+  document.getElementById('d-rep-urg').innerHTML=repHtml||
+    (rrAct.length>0?`<div style="color:var(--green2);font-size:12px;text-align:center;padding:16px">✓ Sin fechas urgentes<br><span style="color:var(--text3);font-size:11px">${sinFecha.length} repuesto(s) sin fecha asignada</span></div>`
+    :'<div class="empty" style="padding:16px;font-size:11px">Sin repuestos activos</div>');
 
   updateBadge();
 }
 
-// ── EXPORT ──
+
 function exportarExcel(){
   const wb=XLSX.utils.book_new();
   // Clientes
