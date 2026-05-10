@@ -347,7 +347,7 @@ tr.ra td{background:rgba(211,47,47,.05)}
   <div class="page">
     <div class="agg" id="ag-grid"></div>
     <div style="margin-top:16px"><div class="card"><div class="ct">Todas las visitas</div><div class="tw">
-      <table><thead><tr><th>Fecha</th><th>Hora</th><th>Cliente</th><th>Región</th><th>Contacto</th><th>Tel.</th><th>Estado</th><th>Urgencia</th><th></th></tr></thead>
+      <table><thead><tr><th>Ticket</th><th>Fecha</th><th>Hora</th><th>Cliente</th><th>Región</th><th>Contacto</th><th>Tel.</th><th>Estado</th><th>Urgencia</th><th></th></tr></thead>
       <tbody id="tb-ag"></tbody></table>
     </div></div></div>
   </div>
@@ -1146,6 +1146,14 @@ function limpiarHora(h){
 }
 
 async function syncFromSheets(){
+  // Limpiar cache viejo si tiene formato incorrecto
+  try{
+    const cached=JSON.parse(localStorage.getItem('nx_v17_vis')||'[]');
+    if(cached.length>0 && cached[0].cli && !cached[0].ticket){
+      // Cache viejo sin ticket — limpiar para forzar re-lectura desde Sheets
+      localStorage.removeItem('nx_v17_vis');
+    }
+  }catch(e){}
   setStatus(false,'⟳ Sincronizando...');
   const data = await apiCall(null);
   if(data.ok){
