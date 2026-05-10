@@ -185,7 +185,7 @@ tr.ra td{background:rgba(211,47,47,.05)}
     <div id="sync-status" style="font-size:10px;color:#F57C00;margin-bottom:6px">○ Conectando...</div>
     <button onclick="syncAllToSheets()" class="btn" style="width:100%;background:rgba(76,175,80,.2);color:#6dcf71;font-size:11px;padding:7px;margin-bottom:4px;border:1px solid rgba(76,175,80,.3)">☁ Sincronizar</button>
     <button onclick="syncFromSheets().then(()=>{renderActive()})" class="btn" style="width:100%;background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);font-size:11px;padding:7px;margin-bottom:4px;border:1px solid rgba(255,255,255,.15)">⟳ Actualizar</button>
-    <button onclick="inicializarClientesEnSheets()" class="btn" style="width:100%;background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);font-size:10px;padding:5px;margin-bottom:4px;border:1px solid rgba(255,255,255,.1)">📋 Cargar clientes Sheets</button>
+    <button onclick="if(confirm('⚠ Esto recarga los clientes base y puede pisar cambios. ¿Continuar?')) inicializarClientesEnSheets()" class="btn" style="width:100%;background:rgba(255,99,99,.15);color:rgba(255,150,150,.8);font-size:10px;padding:5px;margin-bottom:4px;border:1px solid rgba(255,99,99,.2)">⚠ Recargar clientes base</button>
     <button onclick="exportarExcel()" class="btn" style="width:100%;background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);font-size:10px;padding:5px;border:1px solid rgba(255,255,255,.1)">⬇ Excel</button>
   </div>
 </aside>
@@ -1287,6 +1287,7 @@ function guardarCliente(){
     calE:document.getElementById('c-cal-e').value.trim(),
     pal:document.getElementById('c-pal-m').value, palO:document.getElementById('c-pal-o').value.trim(),
     eq_pal:document.getElementById('c-pal-e').value.trim(),
+    sk: false,
   };
   if(idx>=0) CLIENTES[idx]=c; else CLIENTES.push(c);
   sC(CLIENTES);
