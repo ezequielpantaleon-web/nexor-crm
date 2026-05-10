@@ -1149,12 +1149,22 @@ function limpiarHora(h){
 }
 
 async function syncFromSheets(){
-  // Limpiar cache viejo si tiene formato incorrecto
+  // Limpiar cache viejo — siempre usar datos frescos de Sheets
   try{
     const cached=JSON.parse(localStorage.getItem('nx_v17_vis')||'[]');
-    if(cached.length>0 && cached[0].cli && !cached[0].ticket){
-      // Cache viejo sin ticket — limpiar para forzar re-lectura desde Sheets
-      localStorage.removeItem('nx_v17_vis');
+    if(cached.length>0){
+      const v=cached[0];
+      // Detectar datos corridos: si tel contiene texto largo (cargo) está mal
+      const telVal=String(v.tel||'');
+      if(telVal.includes('Mantenimiento')||telVal.includes('General')||telVal.includes('Planta')||telVal.includes('Técnico')||telVal.includes('Encargado')){
+        localStorage.removeItem('nx_v17_vis');
+      }
+      // Detectar tickets repetidos (VIS-0001 x3)
+      const tickets=cached.map(x=>x.ticket).filter(Boolean);
+      const uniqueTickets=new Set(tickets);
+      if(tickets.length>0 && uniqueTickets.size < tickets.length){
+        localStorage.removeItem('nx_v17_vis'); // limpiar cache con duplicados
+      }
     }
   }catch(e){}
   setStatus(false,'⟳ Sincronizando...');
@@ -1162,9 +1172,18 @@ async function syncFromSheets(){
   if(data.ok){
     if(data.clientes?.length){ CLIENTES=data.clientes; sC(CLIENTES); }
     if(data.visitas?.length){ sV(data.visitas.map(v=>{
-    v.id = String(v.id);  // normalizar ID
-    v.fecha=limpiarFecha(v.fecha);
-    v.hora=limpiarHora(v.hora);
+    v.id = String(v.id);
+    v.fecha = limpiarFecha(v.fecha);
+    v.hora = limpiarHora(v.hora);
+    // Priorizar campos amigables sobre internos (el backend devuelve ambos)
+    if(v.contacto) v.cont = v.contacto;
+    if(v.telefono !== undefined) v.tel = v.telefono;
+    if(v.cliente) v.cli = v.cliente;
+    if(v.obs_infeed !== undefined) v.infOb = v.obs_infeed;
+    if(v.obs_calibrador !== undefined) v.calOb = v.obs_calibrador;
+    if(v.obs_llenado !== undefined) v.palOb = v.obs_llenado;
+    if(v.comentarios !== undefined) v.com = v.comentarios;
+    if(v.timestamp) v.ts = v.timestamp;
     return v;
   })); }
     if(data.servicios?.length) sS(data.servicios.map(s=>{s.id=String(s.id);return s;}));
@@ -1501,7 +1520,7 @@ function renderVis(){
       <td class="tn">${v.cli}<small>${c.reg||''}</small></td>
       <td style="font-size:11px">${c.reg||'—'}</td>
       <td style="font-size:11px">${v.cont||c.nom||'—'}</td>
-      <td style="font-size:11px;font-family:'DM Mono'">${v.tel||c.tel||'—'}</td>
+      <td style="font-size:11px;font-family:'DM Mono'">${v.tel||'—'}</td>
       <td>${bE(v.estado)}</td>
       <td>${bU(v.urgencia)}</td>
       <td class="tm">${v.infOb||'—'}</td>
@@ -1773,7 +1792,7 @@ function renderAg(){
       <td class="tn">${v.cli}<small>${c.reg||''}</small></td>
       <td style="font-size:11px">${c.reg||'—'}</td>
       <td style="font-size:11px">${v.cont||c.nom||'—'}</td>
-      <td style="font-size:11px;font-family:'DM Mono'">${v.tel||c.tel||'—'}</td>
+      <td style="font-size:11px;font-family:'DM Mono'">${v.tel||'—'}</td>
       <td>${bE(v.estado)}</td><td>${bU(v.urgencia)}</td>
       <td><button class="btn bg bs" onclick="abrirVisita('${v.cli.replace(/'/g,"\'")}')">Ver</button></td>
     </tr>`;
