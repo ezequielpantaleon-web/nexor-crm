@@ -1051,7 +1051,7 @@ const SK = [
 ];
 const CLIENTES_BASE = [...CB, ...SK];
 
-const API = 'https://script.google.com/macros/s/AKfycby9RmdxpkopimPnCkocAVFeEWn3r3ObxYfytXn9vdKQLJlYz2SVXJVNBiYa3FlCygYR/exec';
+const API = 'https://script.google.com/macros/s/AKfycbxmtwddZWRiE7yYCi6uYgn8ty4ECzP6vulbHgU9O1bsy55Fi4cvCNefc_YSc7XFJUFk/exec';
 const SC={Mecánico:'#D32F2F',Eléctrico:'#F57C00',Automatización:'#388E3C','Control Línea':'#1976D2','Téc. Campo':'#6B3FA0',Repuesto:'#4CAF50'};
 
 // ── STORAGE ──
@@ -1070,12 +1070,15 @@ let CLIENTES = lC().length ? lC() : [...CB, ...SK];
 
 // ── TICKETS ──
 function nextTicket(prefix, items){
-  const nums = items.map(x=>{
-    const m = (x.ticket||'').match(/\d+/);
-    return m ? parseInt(m[0]) : 0;
-  });
-  const next = (Math.max(0,...nums) + 1).toString().padStart(4,'0');
-  return `${prefix}-${next}`;
+  // Buscar el número más alto de tickets con ese prefijo
+  const nums = items
+    .filter(x=>x.ticket&&String(x.ticket).startsWith(prefix+'-'))
+    .map(x=>{
+      const m = String(x.ticket).match(/-(\d+)$/);
+      return m ? parseInt(m[1]) : 0;
+    });
+  const next = (nums.length>0 ? Math.max(...nums) : 0) + 1;
+  return `${prefix}-${next.toString().padStart(4,'0')}`;
 }
 
 // ── API ──
