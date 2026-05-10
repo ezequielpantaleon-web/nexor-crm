@@ -180,12 +180,13 @@ tr.ra td{background:rgba(211,47,47,.05)}
     <div class="ni" onclick="goTo('repuestos')">🔩 Repuestos</div>
     <div class="ni" onclick="goTo('gantt')">▤ Gantt</div>
     <div class="ni" onclick="goTo('agenda')">◷ Agenda</div>
+    <div class="ni" onclick="abrirConfig()">⚙ Configuración</div>
   </nav>
   <div class="sf">
     <div id="sync-status" style="font-size:10px;color:#F57C00;margin-bottom:6px">○ Conectando...</div>
     <button onclick="syncAllToSheets()" class="btn" style="width:100%;background:rgba(76,175,80,.2);color:#6dcf71;font-size:11px;padding:7px;margin-bottom:4px;border:1px solid rgba(76,175,80,.3)">☁ Sincronizar</button>
     <button onclick="syncFromSheets().then(()=>{renderActive()})" class="btn" style="width:100%;background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);font-size:11px;padding:7px;margin-bottom:4px;border:1px solid rgba(255,255,255,.15)">⟳ Actualizar</button>
-    <button onclick="if(confirm('⚠ Esto recarga los clientes base y puede pisar cambios. ¿Continuar?')) inicializarClientesEnSheets()" class="btn" style="width:100%;background:rgba(255,99,99,.15);color:rgba(255,150,150,.8);font-size:10px;padding:5px;margin-bottom:4px;border:1px solid rgba(255,99,99,.2)">⚠ Recargar clientes base</button>
+    
     <button onclick="exportarExcel()" class="btn" style="width:100%;background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);font-size:10px;padding:5px;border:1px solid rgba(255,255,255,.1)">⬇ Excel</button>
   </div>
 </aside>
@@ -646,6 +647,50 @@ tr.ra td{background:rgba(211,47,47,.05)}
     <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)">
       <button class="btn bg" onclick="cerrar('m-repuesto')">Cancelar</button>
       <button class="btn bp" onclick="guardarRepuesto()">Guardar repuesto</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- MODAL CONFIGURACIÓN -->
+<div id="m-config" class="ov" style="display:none" onclick="if(event.target===this)cerrar('m-config')">
+<div class="modal" style="max-width:480px">
+  <div class="mh"><h2>⚙ Configuración</h2>
+    <button class="btn bg bs" style="color:#fff;border-color:rgba(255,255,255,.3)" onclick="cerrar('m-config')">✕</button>
+  </div>
+  <div class="mb">
+    
+    <div class="stitle">📊 Datos</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      
+      <button class="btn bp" style="width:100%;padding:12px" onclick="exportarExcel()">
+        ⬇ Exportar todo a Excel
+      </button>
+      
+      <button class="btn bg" style="width:100%;padding:12px" onclick="syncAllToSheets()">
+        ☁ Sincronizar todo a Sheets
+      </button>
+      
+      <button class="btn bg" style="width:100%;padding:12px" onclick="syncFromSheets().then(()=>{renderActive();toast('✓ Datos actualizados')})">
+        ⟳ Actualizar desde Sheets
+      </button>
+    </div>
+
+    <div class="stitle" style="margin-top:20px">🔒 Administración — solo admin</div>
+    <div style="background:var(--red-bg);border:1px solid #ffcdd2;border-radius:var(--r);padding:14px;margin-bottom:12px">
+      <div style="font-size:12px;color:var(--red);font-weight:700;margin-bottom:8px">⚠ Zona de riesgo</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:12px">Estas acciones pueden borrar datos. Requieren contraseña de administrador.</div>
+      <div class="fg" style="margin-bottom:10px">
+        <label>Contraseña admin</label>
+        <input type="password" id="cfg-pass" class="fi" placeholder="Ingresá la contraseña">
+      </div>
+      <button class="btn bd" style="width:100%;padding:12px" onclick="recargarConPass()">
+        ⚠ Recargar clientes base (borra cambios)
+      </button>
+    </div>
+
+    <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:8px">
+      v17 · NEXOR CRM · <a href="https://ezequielpantaleon-web.github.io/nexor-crm/" style="color:var(--green2)" target="_blank">nexor-crm</a>
     </div>
   </div>
 </div>
@@ -1797,6 +1842,25 @@ function exportarExcel(){
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([hR,...rR]),'Repuestos');
   XLSX.writeFile(wb,`NEXOR_CRM_${new Date().toISOString().split('T')[0]}.xlsx`);
   toast('✓ Excel exportado');
+}
+
+// ── CONFIGURACIÓN ──
+const ADMIN_PASS = 'nexor2024'; // Cambiá esta contraseña
+
+function abrirConfig(){
+  document.getElementById('cfg-pass').value='';
+  document.getElementById('m-config').style.display='flex';
+}
+
+function recargarConPass(){
+  const pass = document.getElementById('cfg-pass').value;
+  if(pass !== ADMIN_PASS){
+    toast('⚠ Contraseña incorrecta');
+    return;
+  }
+  if(!confirm('¿Seguro? Esto va a reemplazar TODOS los datos de clientes con los datos base originales.')) return;
+  cerrar('m-config');
+  inicializarClientesEnSheets();
 }
 
 // ── INIT ──
