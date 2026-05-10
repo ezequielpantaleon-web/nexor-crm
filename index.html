@@ -1085,7 +1085,7 @@ const SK = [
 ];
 const CLIENTES_BASE = [...CB, ...SK];
 
-const API = 'https://script.google.com/macros/s/AKfycbxmtwddZWRiE7yYCi6uYgn8ty4ECzP6vulbHgU9O1bsy55Fi4cvCNefc_YSc7XFJUFk/exec';
+const API = 'https://script.google.com/macros/s/AKfycbzI_yXS2K4qeY1Go4RGa07GzLCG9jjnQ1UHwl2Ibjyr5xPpNGhEX9Z6WhkWvHKSZ6wy/exec';
 const SC={Mecánico:'#D32F2F',Eléctrico:'#F57C00',Automatización:'#388E3C','Control Línea':'#1976D2','Téc. Campo':'#6B3FA0',Repuesto:'#4CAF50'};
 
 // ── STORAGE ──
@@ -1222,7 +1222,6 @@ async function syncFromSheets(){
   })); }
     if(data.servicios?.length) sS(data.servicios.map(s=>{
       s.id=String(s.id);
-      // Mapear nombres amigables a internos
       if(s.cliente) s.cli=s.cliente;
       if(s.seccion) s.sec=s.seccion;
       if(s.fecha_inicio) s.inicio=s.fecha_inicio;
@@ -1230,17 +1229,18 @@ async function syncFromSheets(){
       if(s.descripcion) s.desc=s.descripcion;
       if(s.comentarios!==undefined) s.com=s.comentarios;
       if(s.timestamp) s.ts=s.timestamp;
+      // criticidad ya viene mapeada por nombre
       return s;
     }));
     if(data.repuestos?.length) sR(data.repuestos.map(r=>{
       r.id=String(r.id);
-      // Mapear nombres amigables a internos
       if(r.cliente) r.cli=r.cliente;
       if(r.repuesto) r.desc=r.repuesto;
       if(r.seccion) r.sec=r.seccion;
       if(r.fecha_necesita) r.fecha=r.fecha_necesita;
       if(r.comentarios!==undefined) r.com=r.comentarios;
       if(r.timestamp) r.ts=r.timestamp;
+      // criticidad ya viene mapeada por nombre
       return r;
     }));
     setStatus(true,'● En línea · '+new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}));
