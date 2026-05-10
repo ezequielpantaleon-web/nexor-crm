@@ -1006,7 +1006,7 @@ const SK = [
 ];
 const CLIENTES_BASE = [...CB, ...SK];
 
-const API = 'https://script.google.com/macros/s/AKfycbxou0_PG76i4X0O51Grq3owIMzLtvZRNxjG2dOjlTo5eSE3dmYQx87ZHuk8K2viWMKO/exec';
+const API = 'https://script.google.com/macros/s/AKfycby9RmdxpkopimPnCkocAVFeEWn3r3ObxYfytXn9vdKQLJlYz2SVXJVNBiYa3FlCygYR/exec';
 const SC={Mecánico:'#D32F2F',Eléctrico:'#F57C00',Automatización:'#388E3C','Control Línea':'#1976D2','Téc. Campo':'#6B3FA0',Repuesto:'#4CAF50'};
 
 // ── STORAGE ──
@@ -1396,12 +1396,14 @@ function guardarVisita(){
   const cli=document.getElementById('v-cli').value;
   if(!cli){ toast('⚠ Seleccioná un cliente'); return; }
   const vsAll2=lV();
-  const existeId=String(document.getElementById('v-id').value||'');
-  const visExistente=existeId ? vsAll2.find(x=>String(x.id)===existeId) : null;
-  const ticketExistente=visExistente?.ticket||'';
+  const existeId=String(document.getElementById('v-id').value||'').trim();
+  // Buscar visita existente por ID para mantener su ticket
+  const visExistente=existeId ? vsAll2.find(x=>String(x.id).trim()===existeId) : null;
+  const nuevoId=existeId||String(Date.now());
+  const ticket=visExistente?.ticket || nextTicket('VIS',vsAll2);
   const v={
-    id:existeId||String(Date.now()),
-    ticket:ticketExistente||nextTicket('VIS',vsAll2),
+    id:nuevoId,
+    ticket:ticket,
     cli, fecha:document.getElementById('v-fecha').value,
     hora:document.getElementById('v-hora').value, estado:document.getElementById('v-est').value,
     urgencia:document.getElementById('v-urg').value,
